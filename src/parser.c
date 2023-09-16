@@ -1,6 +1,10 @@
 #include <stdio.h>
 
 #define BUFFER_SIZE 1024
+#define false 0
+#define true 1
+
+typedef int bool;
 
 // Lexer
 
@@ -12,6 +16,7 @@ enum Token {
 
 typedef struct Lexer {
     char buffer[BUFFER_SIZE];
+    int position;
 } Lexer;
 
 // Parser
@@ -22,8 +27,9 @@ int main(int argc, char** argv) {
     }
     FILE* file = fopen(argv[1], "r");
     Lexer lexer = {};
-    while (fgets(lexer.buffer, BUFFER_SIZE, file) != NULL) {
-        printf("%s", lexer.buffer);
+    while (fgets(lexer.buffer, sizeof(lexer.buffer), file) != NULL) {
+        lexer.position = 0;
+        printf("%s/n", &(lexer.buffer[lexer.position]));
     }
     fclose(file);
     return 0;
