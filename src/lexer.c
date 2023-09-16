@@ -1,3 +1,7 @@
+#ifndef GROG_LEXER
+
+#define GROG_LEXER
+/*
 typedef enum Token {
     EOF = 0,
     FUNC = 1,
@@ -20,4 +24,5 @@ typedef struct LexerStatus {
     char lastChar;
     char currentChar;
 } LexerStatus;
-
+*/
+#endif
