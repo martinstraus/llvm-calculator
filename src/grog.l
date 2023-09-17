@@ -3,18 +3,23 @@ letter [A-Za-z]
 ws [ \t\n]
 
 %{
-    int count;
-    void yyerror(char* );
+typedef enum TokenType {
+    IDENTIFIER = 1, NUMBER
+} TokenType; 
+
+int yyval, count;
+void yyerror(char*);
 %}
 
 %%
-{ws}                        { /* do nothing */ } // discard whitespace
-{letter}({letter}|{digit})* { count++; } // match identifier
-.                           { yyerror("unexpected letter\n"); }
+{ws}                        { /* do nothing */ }                      // discard whitespace
+{letter}({letter}|{digit})* { count++; return(IDENTIFIER); }          // match identifier
+{digit}+                    { yyval = atoi(yytext); return(NUMBER); } // match number
+.                           { yyerror("unexpected letter\n"); }       // reject anything else
 %%
 
-int yywrap (){
-    return 1;
+int yywrap() {
+    return feof(yyin);
 }
 
 void yyerror(char* error) {
