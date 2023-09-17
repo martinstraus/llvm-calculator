@@ -11,17 +11,23 @@ typedef int bool;
 
 // Lexer
 
-enum Token {
+enum TokenType {
     _EOF = 0,
     FUNC = 1,
     IDENTIFIER = 2
 };
+
+typedef struct Token {
+    enum TokenType type;
+    char* textValue;
+} Token;
 
 typedef struct Lexer {
     bool initialized;
     FILE* file;
     char buffer[BUFFER_SIZE];
     int position;
+    int rollback;
 } Lexer;
 
 char* readFileIntoBuffer(Lexer *lexer) {
@@ -41,6 +47,36 @@ char nextchar(Lexer *lexer) {
         return EOF;
     }
     return lexer->buffer[lexer->position];
+}
+
+void rollback(Lexer *lexer) {
+    lexer->position = lexer->rollback;
+}
+
+bool isLetter(char c) {
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
+
+bool isDigit(char c) {
+    return c > '0' && c < '9';
+}
+
+Token identifier(Lexer* lexer) {
+    Token t = {};
+    char c = nextchar(lexer);
+    while (isDigit(c)) {
+
+    }
+    return t;
+}
+
+Token nextToken(Lexer *lexer) {
+    lexer->rollback = lexer->position;
+    char c = nextchar(lexer);
+    if (isLetter(c)) {
+        rollback(lexer);
+        return identifier(lexer);
+    }
 }
 
 // Parser
