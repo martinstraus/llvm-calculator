@@ -1,13 +1,11 @@
-build: grog lexer
+build: parser
 
-grog: src/parser.c
+parser: src/parser.c
 	mkdir -p build
-	gcc -g -o build/grogc src/parser.c
-
-lexer: src/grog.l
-	mkdir -p build
+	bison -d -o src/grog.tab.c src/grog.y
 	flex -o src/grog.yy.c src/grog.l
-	gcc -g -o build/grogl src/lex.c
+	gcc -o build/grogc src/grog.tab.c src/grog.yy.c -lfl
 
 clean:
 	rm -Rf build
+	rm src/grog.tab.c src/grog.tab.h src/grog.yy.c
