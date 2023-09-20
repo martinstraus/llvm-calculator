@@ -1,14 +1,21 @@
-
 %{
 #include "grog.tab.h"
 %}
 
 %%
 
-[a-z][A-Z]+ { yylval = yytext; return ID; }
 [0-9]+      { yylval = atoi(yytext); return NUMBER; }
 "+"         { return ADD; }
 "-"         { return SUB; }
 "*"         { return MUL; }
 "/"         { return DIV; }
 \n          { return EOL; }
+[ \t]       { /* Ignore whitespace and tabs */ }
+
+.           { fprintf(stderr, "Unexpected character: %s\n", yytext); }
+
+%%
+
+int yywrap() {
+    return 1;
+}

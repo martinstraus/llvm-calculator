@@ -1,26 +1,39 @@
-%token ID
+%{
+#include <stdio.h>
+%}
+
+/* Define tokens */
 %token NUMBER
 %token ADD SUB MUL DIV
 %token EOL
 
 %%
 
-program: expr EOL
+/* Start symbol */
+calc: expr EOL { printf("Result: %d\n", $1); }
     ;
 
-expr:
-    expr ADD expr
-    | expr SUB expr
-    | term
+/* Expressions */
+expr: expr ADD term { $$ = $1 + $3; }
+    | expr SUB term { $$ = $1 - $3; }
+    | term { $$ = $1; }
     ;
 
-term:
-    term MUL term
-    | term DIV term
-    | factor
+term: term MUL factor { $$ = $1 * $3; }
+    | term DIV factor { $$ = $1 / $3; }
+    | factor { $$ = $1; }
     ;
 
-factor:
-    NUMBER
-    | ID
+factor: NUMBER { $$ = $1; }
     ;
+
+%%
+
+int main() {
+    yyparse();
+    return 0;
+}
+
+void yyerror(char* s) {
+    fprintf(stderr, "Error: %s\n", s);
+}

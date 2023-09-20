@@ -1,6 +1,6 @@
 build: parser
 
-parser: src/parser.c
+parser:
 	mkdir -p build
 	bison -d -o src/grog.tab.c src/grog.y
 	flex -o src/grog.yy.c src/grog.l
@@ -8,4 +8,4 @@ parser: src/parser.c
 
 clean:
 	rm -Rf build
-	rm src/grog.tab.c src/grog.tab.h src/grog.yy.c
+	rm src/grog.tab.c src/grog.tab.h src/grog.yy.c src/parser.c
