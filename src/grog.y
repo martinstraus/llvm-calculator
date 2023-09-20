@@ -28,12 +28,3 @@ factor: NUMBER { $$ = $1; }
     ;
 
 %%
-
-int main() {
-    yyparse();
-    return 0;
-}
-
-void yyerror(char* s) {
-    fprintf(stderr, "Error: %s\n", s);
-}

@@ -4,7 +4,7 @@ parser:
 	mkdir -p build
 	bison -d -o src/grog.tab.c src/grog.y
 	flex -o src/grog.yy.c src/grog.l
-	gcc -o build/grogc src/grog.tab.c src/grog.yy.c -lfl
+	gcc -o build/grogc src/grogc.c src/grog.tab.c src/grog.yy.c -lfl
 
 clean:
 	rm -Rf build
