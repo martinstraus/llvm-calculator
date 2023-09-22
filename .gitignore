@@ -1,3 +1,4 @@
 src/grog.tab.h
 src/grog.tab.c
 src/grog.yy.c
+grogc
