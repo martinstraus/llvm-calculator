@@ -1,5 +1,8 @@
 %{
 #include <stdio.h>
+
+int result;
+
 %}
 
 /* Define tokens */
@@ -10,7 +13,7 @@
 %%
 
 /* Start symbol */
-calc: expr EOL { printf("Result: %d\n", $1); }
+calc: expr EOL { result = $1; }
     ;
 
 /* Expressions */
