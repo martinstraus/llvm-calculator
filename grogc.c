@@ -13,7 +13,6 @@ int main(int args, char** argv) {
         showUsage();
         exit(1);
     }
-    printf("File: %s\n", argv[1]);
     yyin = fopen(argv[1], "r");
     yyparse();
     fclose(yyin);
