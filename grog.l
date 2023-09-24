@@ -17,5 +17,5 @@
 %%
 
 int yywrap() {
-    return 1;
+    return feof(yyin);
 }
