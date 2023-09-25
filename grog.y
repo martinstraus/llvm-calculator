@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include "grog_ast.h"
 
 int result;
 
