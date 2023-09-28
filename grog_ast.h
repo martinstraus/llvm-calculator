@@ -16,4 +16,7 @@ typedef struct Node {
     struct Node *right; // used only when type == on of the arithmetic operations
 } Node;
 
+Node* createIntNode(int value);
+Node* createExprNode(NodeType type, Node* left, Node* right);
+
 #endif
