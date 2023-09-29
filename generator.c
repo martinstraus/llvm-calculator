@@ -32,6 +32,19 @@ void generate(Node* node, char* filename) {
     while (n != NULL) {
         if (n->type == NT_NUMBER) {
             result = LLVMConstInt(LLVMInt32Type(), n->number, false);
+        } else {
+            LLVMValueRef left = NULL;
+            LLVMValueRef right = NULL;
+            if (n->left->type == NT_NUMBER) {
+                left = LLVMConstInt(LLVMInt32Type(), n->left->number, false);
+            }
+            if (n->right->type == NT_NUMBER) {
+                right = LLVMConstInt(LLVMInt32Type(), n->right->number, false);
+            }
+            switch (n->type) {
+                case NT_ADD:
+                    result = LLVMBuildAdd(builder, left, right, "result");
+            }
         }
         n = NULL;
     }
