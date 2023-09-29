@@ -6,10 +6,16 @@ int result;
 
 %}
 
+%union {
+    int number;
+}
+
 /* Define tokens */
-%token NUMBER
+%token <number> NUMBER
 %token ADD SUB MUL DIV
 %token EOL
+
+%type <number> calc expr term factor
 
 %%
 
