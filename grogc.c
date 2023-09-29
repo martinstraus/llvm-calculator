@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include "grog.tab.h"
 #include "grog_ast.h"
+#include "generator.h"
 
 extern FILE* yyin; // This is used to set the input source for the parser
 extern Node* root;
 
 void showUsage() {
-    fprintf(stderr, "Usage:\n\tgrogc [source file]\n");
+    fprintf(stderr, "Usage:\n\tgrogc [source file] [output]\n");
 }
 
 int evaluate(Node *n) {
@@ -29,7 +30,7 @@ int evaluate(Node *n) {
 }
 
 int main(int args, char** argv) {
-    if (args < 2) {
+    if (args < 3) {
         showUsage();
         exit(1);
     }
@@ -37,6 +38,7 @@ int main(int args, char** argv) {
     yyparse();
     int result = evaluate(root);
     printf("Result: %d\n", result);
+    generate(root, argv[2]);
     fclose(yyin);
     return 0;
 }

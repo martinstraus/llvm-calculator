@@ -3,6 +3,7 @@
 
 Node* createIntNode(int number) {
     Node* n = malloc(sizeof(Node));
+    n->number = number;
     return n;
 }
 

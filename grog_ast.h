@@ -11,7 +11,7 @@ typedef enum NodeType {
 
 typedef struct Node {
     NodeType type;
-    int value; // used only when type == NUMBER
+    int number; // used only when type == NUMBER
     struct Node *left; // used only when type == on of the arithmetic operations
     struct Node *right; // used only when type == on of the arithmetic operations
 } Node;
