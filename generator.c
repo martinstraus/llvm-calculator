@@ -26,7 +26,15 @@ void generate(Node* node, char* filename) {
     LLVMPositionBuilderAtEnd(builder, entryBlock);
     // Scaffoling ends...
 
-    LLVMValueRef result = LLVMConstInt(LLVMInt32Type(), 0, false);
+    LLVMValueRef zero = LLVMConstInt(LLVMInt32Type(), 0, false);
+    LLVMValueRef result = zero;
+    Node* n = node;
+    while (n != NULL) {
+        if (n->type == NT_NUMBER) {
+            result = LLVMConstInt(LLVMInt32Type(), n->number, false);
+        }
+        n = NULL;
+    }
     LLVMBuildRet(builder, result);
 
     // Write begins...

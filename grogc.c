@@ -36,8 +36,6 @@ int main(int args, char** argv) {
     }
     yyin = fopen(argv[1], "r");
     yyparse();
-    int result = evaluate(root);
-    printf("Result: %d\n", result);
     generate(root, argv[2]);
     fclose(yyin);
     return 0;
