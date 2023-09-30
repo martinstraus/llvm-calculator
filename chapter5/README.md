@@ -9,6 +9,10 @@ In this chapter we make the grammar more complex, introducing:
 * Comments.
 * The last line is the output. 
 
+## Example input file
+
+    (1+2)/(3*4)
+
 ## How to build
 
     make
