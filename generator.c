@@ -13,6 +13,43 @@
 #define false 0
 #define true 1
 
+int vars = 0;
+
+char* newVarName(){
+    ++vars;
+    char* name = malloc(sizeof(char) * 3);
+    sprintf(name, "%d", vars);
+    return name;
+}
+
+// Generate a value reference for the node. Recursively generates values for left and right, if needed.
+LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
+    if (n->type == NT_NUMBER) {
+        return LLVMConstInt(LLVMInt32Type(), n->number, false);
+    } else {
+        LLVMValueRef left = generateValue(builder, n->left);
+        LLVMValueRef right = generateValue(builder, n->right);
+        switch (n->type) {
+        case NT_ADD:
+            return LLVMBuildAdd(builder, left, right, newVarName());
+            break;
+        case NT_SUB:
+            return LLVMBuildSub(builder, left, right, newVarName());
+            break;
+        case NT_MUL:
+            return LLVMBuildMul(builder, left, right, newVarName());
+            break;
+        case NT_DIV:
+            return LLVMBuildExactUDiv(builder, left, right, newVarName());
+            break;
+        default:
+            fprintf(stderr, "Unsupported operator: %d", n->type);
+            exit(1);
+            break;
+        }
+    } 
+}
+
 void generate(Node* node, char* filename) {
     // Scaffoling begins...
     LLVMInitializeCore(LLVMGetGlobalPassRegistry());
@@ -26,28 +63,7 @@ void generate(Node* node, char* filename) {
     LLVMPositionBuilderAtEnd(builder, entryBlock);
     // Scaffoling ends...
 
-    LLVMValueRef zero = LLVMConstInt(LLVMInt32Type(), 0, false);
-    LLVMValueRef result = zero;
-    Node* n = node;
-    while (n != NULL) {
-        if (n->type == NT_NUMBER) {
-            result = LLVMConstInt(LLVMInt32Type(), n->number, false);
-        } else {
-            LLVMValueRef left = NULL;
-            LLVMValueRef right = NULL;
-            if (n->left->type == NT_NUMBER) {
-                left = LLVMConstInt(LLVMInt32Type(), n->left->number, false);
-            }
-            if (n->right->type == NT_NUMBER) {
-                right = LLVMConstInt(LLVMInt32Type(), n->right->number, false);
-            }
-            switch (n->type) {
-                case NT_ADD:
-                    result = LLVMBuildAdd(builder, left, right, "result");
-            }
-        }
-        n = NULL;
-    }
+    LLVMValueRef result = generateValue(builder, node);
     LLVMBuildRet(builder, result);
 
     // Write begins...
