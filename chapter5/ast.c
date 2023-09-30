@@ -7,6 +7,12 @@ Node* createIntNode(int number) {
     return n;
 }
 
+Node* createReferenceNode(char* name) {
+    Node* n = malloc(sizeof(Node));
+    n->name = name;
+    return n;
+}
+
 Node* createExprNode(NodeType type, Node* left, Node* right) {
     Node* n = malloc(sizeof(Node));
     n->type = type;
