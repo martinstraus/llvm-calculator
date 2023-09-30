@@ -26,8 +26,7 @@ calc: expr end { root = $1; }
     ;
 
 end:
-    EOL
-    | YYEOF
+    YYEOF
     ;
 
 /* Expressions */
