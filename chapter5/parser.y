@@ -22,7 +22,12 @@ Node* root;
 %%
 
 /* Start symbol */
-calc: expr EOL { root = $1; }
+calc: expr end { root = $1; }
+    ;
+
+end:
+    EOL
+    | YYEOF
     ;
 
 /* Expressions */

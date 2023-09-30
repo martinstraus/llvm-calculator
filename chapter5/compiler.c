@@ -6,6 +6,7 @@
 
 extern FILE* yyin; // This is used to set the input source for the parser
 extern Node* root;
+extern int yylineno;
 
 void showUsage() {
     fprintf(stderr, "Usage:\n\tgrogc [source file] [output]\n");
@@ -42,6 +43,6 @@ int main(int args, char** argv) {
 }
 
 void yyerror(const char* s) {
-    fprintf(stderr, "Error: %s\n", s);
+    fprintf(stderr, "[line %d]: %s\n", yylineno, s);
     exit(2); // Terminate the program on error
 }
