@@ -14,6 +14,7 @@ Node* root;
 /* Define tokens */
 %token <number> NUMBER
 %token ADD SUB MUL DIV
+%token LPAREN RPAREN
 %token EOL
 
 %type <node> calc expr term factor

@@ -9,6 +9,8 @@
 "-"         { return SUB; }
 "*"         { return MUL; }
 "/"         { return DIV; }
+"("         { return LPAREN; }
+")"         { return RPAREN; }
 \n          { return EOL; }
 [ \t]       { /* Ignore whitespace and tabs */ }
 
