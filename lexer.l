@@ -1,5 +1,5 @@
 %{
-#include "grog.tab.h"
+#include "parser.tab.h"
 %}
 
 %%

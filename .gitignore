@@ -1,7 +1,7 @@
-grog.tab.h
-grog.tab.c
-grog.yy.c
-grogc
+parser.tab.h
+parser.tab.c
+lexer.yy.c
+compiler
 
 # Prerequisites
 *.d

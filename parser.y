@@ -1,6 +1,6 @@
 %{
 #include <stdio.h>
-#include "grog_ast.h"
+#include "ast.h"
 
 Node* root;
 

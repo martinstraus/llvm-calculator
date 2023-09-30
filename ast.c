@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "grog_ast.h"
+#include "ast.h"
 
 Node* createIntNode(int number) {
     Node* n = malloc(sizeof(Node));

@@ -5,9 +5,9 @@ LIBS = -lfl -lLLVM-14
 build: parser
 
 parser:
-	bison -d -o grog.tab.c grog.y
-	flex -o grog.yy.c grog.l
-	gcc -g -o grogc *.c  $(CFLAGS) $(LDFLAGS) $(LIBS)
+	bison -d -o parser.tab.c parser.y
+	flex -o lexer.yy.c lexer.l
+	gcc -g -o compiler *.c  $(CFLAGS) $(LDFLAGS) $(LIBS)
 
 clean:
-	rm -f ./grogc *.tab.c *.tab.h *.yy.c
+	rm -f ./compiler *.tab.c *.tab.h *.yy.c

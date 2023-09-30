@@ -3,7 +3,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "grog_ast.h"
+#include "ast.h"
 
 #include <llvm-c/Core.h>
 #include <llvm-c/Target.h>

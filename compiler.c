@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "grog.tab.h"
-#include "grog_ast.h"
+#include "parser.tab.h"
+#include "ast.h"
 #include "generator.h"
 
 extern FILE* yyin; // This is used to set the input source for the parser
