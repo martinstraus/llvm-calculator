@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "parser.tab.h"
 #include "ast.h"
-#include "generator.h"
 
 extern FILE* yyin; // This is used to set the input source for the parser
 extern Node* root;
@@ -30,13 +29,14 @@ int evaluate(Node *n) {
 }
 
 int main(int args, char** argv) {
-    if (args < 3) {
+    if (args < 2) {
         showUsage();
         exit(1);
     }
     yyin = fopen(argv[1], "r");
     yyparse();
-    generate(root, argv[2]);
+    int result = evaluate(root);
+    printf("Result: %d\n", result);
     fclose(yyin);
     return 0;
 }

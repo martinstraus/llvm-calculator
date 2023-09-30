@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "parser.tab.h"
 
 extern FILE* yyin; // This is used to set the input source for the parser
-extern int result;
 
 void showUsage() {
     fprintf(stderr, "Usage:\n\tgrogc [source file]\n");
@@ -15,8 +13,7 @@ int main(int args, char** argv) {
         exit(1);
     }
     yyin = fopen(argv[1], "r");
-    yyparse();
-    printf("Result: %d\n", result);
+    yylex();
     fclose(yyin);
     return 0;
 }
