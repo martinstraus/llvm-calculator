@@ -11,7 +11,7 @@ extern int yylineno;
 void showUsage() {
     fprintf(stderr, "Usage:\n\tgrogc [source file] [output]\n");
 }
-
+/*
 int evaluate(Node *n) {
     switch (n->type) {
         case NT_NUMBER:
@@ -29,6 +29,7 @@ int evaluate(Node *n) {
             exit(1);
     }
 }
+*/
 
 int main(int args, char** argv) {
     if (args < 3) {
