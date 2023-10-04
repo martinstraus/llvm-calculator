@@ -22,3 +22,11 @@ Node* createExprNode(NodeType type, Node* left, Node* right) {
     n->right = right;
     return n;
 }
+
+Node* createAssignNode(char* name, Node* expr){
+    Node* n = malloc(sizeof(Node));
+    n->type = NT_ASSIGN;
+    n->expr = expr;
+    return n;
+}
+
