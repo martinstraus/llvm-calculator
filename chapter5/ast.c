@@ -3,12 +3,14 @@
 
 Node* createIntNode(int number) {
     Node* n = malloc(sizeof(Node));
+    n->type = NT_NUMBER;
     n->number = number;
     return n;
 }
 
 Node* createReferenceNode(char* name) {
     Node* n = malloc(sizeof(Node));
+    n->type = NT_REFERENCE;
     n->name = name;
     return n;
 }
