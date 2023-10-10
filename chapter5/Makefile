@@ -6,7 +6,7 @@ build: parser
 
 parser:
 	bison -d -o parser.tab.c parser.y
-	flex -o lexer.yy.c lexer.l
+	flex --debug --outfile lexer.yy.c lexer.l
 	gcc -g -o compiler *.c  $(CFLAGS) $(LDFLAGS) $(LIBS)
 
 clean:

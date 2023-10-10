@@ -15,6 +15,8 @@
 "/"                 { return DIV; }
 "("                 { return LPAREN; }
 ")"                 { return RPAREN; }
+"<-"                { return ASSIGN; }
+";"                 { return SEMICOLON; }
 [ \t\n]             { /* Ignore whitespace and tabs */ }
 .                   { fprintf(stderr, "Unexpected character: %s\n", yytext); }
 

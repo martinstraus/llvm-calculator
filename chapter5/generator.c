@@ -28,6 +28,8 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
         return LLVMConstInt(LLVMInt32Type(), n->number, false);
     } else if (n->type == NT_REFERENCE) {
         return LLVMConstInt(LLVMInt32Type(), 0, false);
+    } else if (n->type == NT_ASSIGN) {
+        return LLVMConstInt(LLVMInt32Type(), 0, false);
     } else {
         LLVMValueRef left = generateValue(builder, n->left);
         LLVMValueRef right = generateValue(builder, n->right);

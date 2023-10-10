@@ -17,14 +17,19 @@ Node* root;
 %token <text> IDENTIFIER
 %token ADD SUB MUL DIV
 %token LPAREN RPAREN
-%token EOL
+%token ASSIGN
+%token SEMICOLON EOL
 
-%type <node> calc expr
+%type <node> calc expr assign
 
 %%
 
 /* Start symbol */
-calc: expr end { root = $1; }
+calc: assign expr end { root = $1; }
+    ;
+
+assign:
+    IDENTIFIER ASSIGN expr SEMICOLON { $$ = createAssignNode($1, $3); }
     ;
 
 end:
