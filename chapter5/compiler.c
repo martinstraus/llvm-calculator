@@ -11,25 +11,6 @@ extern int yylineno;
 void showUsage() {
     fprintf(stderr, "Usage:\n\tgrogc [source file] [output]\n");
 }
-/*
-int evaluate(Node *n) {
-    switch (n->type) {
-        case NT_NUMBER:
-            return n->number;
-        case NT_ADD:
-            return evaluate(n->left) + evaluate(n->right);
-        case NT_SUB:
-            return evaluate(n->left) - evaluate(n->right);
-        case NT_MUL:
-            return evaluate(n->left) * evaluate(n->right);
-        case NT_DIV:
-            return evaluate(n->left) - evaluate(n->right);
-        default:
-            fprintf(stderr, "Unsupported node type: %d\n", n->type);
-            exit(1);
-    }
-}
-*/
 
 int main(int args, char** argv) {
     if (args < 3) {

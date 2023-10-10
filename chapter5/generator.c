@@ -26,26 +26,28 @@ char* newVarName(){
 LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
     if (n->type == NT_NUMBER) {
         return LLVMConstInt(LLVMInt32Type(), n->number, false);
+    } else if (n->type == NT_REFERENCE) {
+        return LLVMConstInt(LLVMInt32Type(), 0, false);
     } else {
         LLVMValueRef left = generateValue(builder, n->left);
         LLVMValueRef right = generateValue(builder, n->right);
         switch (n->type) {
-        case NT_ADD:
-            return LLVMBuildAdd(builder, left, right, newVarName());
-            break;
-        case NT_SUB:
-            return LLVMBuildSub(builder, left, right, newVarName());
-            break;
-        case NT_MUL:
-            return LLVMBuildMul(builder, left, right, newVarName());
-            break;
-        case NT_DIV:
-            return LLVMBuildExactUDiv(builder, left, right, newVarName());
-            break;
-        default:
-            fprintf(stderr, "Unsupported operator: %d", n->type);
-            exit(1);
-            break;
+            case NT_ADD:
+                return LLVMBuildAdd(builder, left, right, newVarName());
+                break;
+            case NT_SUB:
+                return LLVMBuildSub(builder, left, right, newVarName());
+                break;
+            case NT_MUL:
+                return LLVMBuildMul(builder, left, right, newVarName());
+                break;
+            case NT_DIV:
+                return LLVMBuildExactUDiv(builder, left, right, newVarName());
+                break;
+            default:
+                fprintf(stderr, "Unsupported operator: %d", n->type);
+                exit(1);
+                break;
         }
     } 
 }
