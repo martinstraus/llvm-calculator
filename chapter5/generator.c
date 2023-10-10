@@ -72,10 +72,14 @@ void generate(Node* node, char* filename) {
 
     // Write begins...
     char *error = NULL;
-    LLVMVerifyModule(module, LLVMAbortProcessAction, &error);
+    if (LLVMVerifyModule(module, LLVMAbortProcessAction, &error)) {
+        fprintf("Error verifying module: %s\n", error);
+    }
     LLVMDisposeMessage(error);
-    if (LLVMWriteBitcodeToFile(module, filename) != 0) {
+    
+    if (LLVMWriteBitcodeToFile(module, filename)) {
         fprintf(stderr, "Error writing bitcode to file. Skipping.\n");
+        exit(2);
     }
     // Write ends
 
