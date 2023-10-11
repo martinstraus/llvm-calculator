@@ -23,4 +23,11 @@ Node* createReferenceNode(char* name);
 Node* createExprNode(NodeType type, Node* left, Node* right);
 Node* createAssignNode(char* name, Node* expr);
 
+typedef struct Program {
+    Node* assign;   // This should be changed to a list of statements.
+    Node* ret;      // The return expression.
+} Program;
+
+Program* createProgram(Node* assign, Node* ret);
+
 #endif

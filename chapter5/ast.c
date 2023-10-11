@@ -26,7 +26,15 @@ Node* createExprNode(NodeType type, Node* left, Node* right) {
 Node* createAssignNode(char* name, Node* expr){
     Node* n = malloc(sizeof(Node));
     n->type = NT_ASSIGN;
+    n->name = name;
     n->expr = expr;
     return n;
+}
+
+Program* createProgram(Node* assign, Node* ret) {
+    Program* p = malloc(sizeof(Program));
+    p->assign = assign;
+    p->ret = ret;
+    return p;
 }
 

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "ast.h"
 
-Node* root;
+Program* root;
 
 %}
 
@@ -10,6 +10,7 @@ Node* root;
     int number;
     char* text;
     struct Node* node;
+    struct Program* program;
 }
 
 /* Define tokens */
@@ -20,12 +21,13 @@ Node* root;
 %token ASSIGN
 %token SEMICOLON EOL
 
-%type <node> calc expr assign
+%type <program> calc
+%type <node> expr assign
 
 %%
 
 /* Start symbol */
-calc: assign expr end { root = $1; }
+calc: assign expr end { root = createProgram($1, $2); }
     ;
 
 assign:

@@ -29,7 +29,10 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
     } else if (n->type == NT_REFERENCE) {
         return LLVMConstInt(LLVMInt32Type(), 0, false);
     } else if (n->type == NT_ASSIGN) {
-        return LLVMConstInt(LLVMInt32Type(), 0, false);
+        LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->name);
+        LLVMValueRef val = generateValue(builder, n->expr);
+        LLVMBuildStore(builder, val, var);
+        return var;
     } else {
         LLVMValueRef left = generateValue(builder, n->left);
         LLVMValueRef right = generateValue(builder, n->right);
@@ -54,7 +57,12 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
     } 
 }
 
-void generate(Node* node, char* filename) {
+LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
+    generateValue(builder, program->assign);
+    return generateValue(builder, program->ret);;
+}
+
+void generate(Program* root, char* filename) {
     // Scaffoling begins...
     LLVMInitializeCore(LLVMGetGlobalPassRegistry());
     atexit(LLVMShutdown);
@@ -67,13 +75,13 @@ void generate(Node* node, char* filename) {
     LLVMPositionBuilderAtEnd(builder, entryBlock);
     // Scaffoling ends...
 
-    LLVMValueRef result = generateValue(builder, node);
+    LLVMValueRef result = generateProgram(builder, root);
     LLVMBuildRet(builder, result);
 
     // Write begins...
     char *error = NULL;
     if (LLVMVerifyModule(module, LLVMAbortProcessAction, &error)) {
-        fprintf("Error verifying module: %s\n", error);
+        fprintf(stderr, "Error verifying module: %s\n", error);
     }
     LLVMDisposeMessage(error);
     
