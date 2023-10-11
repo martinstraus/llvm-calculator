@@ -16,12 +16,14 @@ typedef struct Node {
     struct Node *left;  // used only when type == on of the arithmetic operations
     struct Node *right; // used only when type == on of the arithmetic operations
     struct Node *expr;  // used only when type == NT_ASSIGN
+    struct Node *next;  // used only when type == NT_ASSIGN, in order to implement a list of assignments.
 } Node;
 
 Node* createIntNode(int value);
 Node* createReferenceNode(char* name);
 Node* createExprNode(NodeType type, Node* left, Node* right);
 Node* createAssignNode(char* name, Node* expr);
+Node* chainStatements(Node* first, Node* second);
 
 typedef struct Program {
     Node* assign;   // This should be changed to a list of statements.

@@ -10,6 +10,10 @@ int result;
 %token ADD SUB MUL DIV
 %token EOL
 
+// This precedence declarations are needed to simplify the grammar rules.
+%left ADD SUB 
+%left MUL DIV
+
 %%
 
 /* Start symbol */

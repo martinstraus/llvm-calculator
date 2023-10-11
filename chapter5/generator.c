@@ -58,7 +58,11 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
 }
 
 LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
-    generateValue(builder, program->assign);
+    Node* a = program->assign;
+    while (a != NULL) {
+        generateValue(builder, program->assign);
+        a = a->next;
+    }
     return generateValue(builder, program->ret);;
 }
 

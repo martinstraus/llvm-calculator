@@ -31,6 +31,11 @@ Node* createAssignNode(char* name, Node* expr){
     return n;
 }
 
+Node* chainStatements(Node* first, Node* second) {
+    first->next = second;
+    return first;
+}
+
 Program* createProgram(Node* assign, Node* ret) {
     Program* p = malloc(sizeof(Program));
     p->assign = assign;

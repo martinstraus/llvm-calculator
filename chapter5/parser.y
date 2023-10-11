@@ -22,16 +22,29 @@ Program* root;
 %token SEMICOLON EOL
 
 %type <program> calc
-%type <node> expr assign
+%type <node> expr assign ret statements
+
+%left ADD SUB
+%left MUL DIV
 
 %%
 
 /* Start symbol */
-calc: assign expr end { root = createProgram($1, $2); }
+calc: statements ret end { root = createProgram($1, $2); }
+    ;
+
+statements:
+    statements assign SEMICOLON { $$ = chainStatements($1, $2); }
+    | assign SEMICOLON          { $$ = $1;   }
+    |                           { $$ = NULL; }
     ;
 
 assign:
-    IDENTIFIER ASSIGN expr SEMICOLON { $$ = createAssignNode($1, $3); }
+    IDENTIFIER ASSIGN expr { $$ = createAssignNode($1, $3); }
+    ;
+
+ret:
+    expr SEMICOLON { $$ = $1; }
     ;
 
 end:
