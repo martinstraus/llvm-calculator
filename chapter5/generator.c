@@ -28,11 +28,6 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
         return LLVMConstInt(LLVMInt32Type(), n->number, false);
     } else if (n->type == NT_REFERENCE) {
         return LLVMConstInt(LLVMInt32Type(), 0, false);
-    } else if (n->type == NT_ASSIGN) {
-        LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->name);
-        LLVMValueRef val = generateValue(builder, n->expr);
-        LLVMBuildStore(builder, val, var);
-        return var;
     } else {
         LLVMValueRef left = generateValue(builder, n->left);
         LLVMValueRef right = generateValue(builder, n->right);
@@ -57,10 +52,19 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
     } 
 }
 
+void generateStatement(LLVMBuilderRef builder, Node* n) {
+    if (n->type != NT_ASSIGN) {
+        fprintf(stderr, "Unsupported statement type: %d\n", n->type);
+    }
+    LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->name);
+    LLVMValueRef val = generateValue(builder, n->expr);
+    LLVMBuildStore(builder, val, var);
+}
+
 LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
     Node* a = program->assign;
     while (a != NULL) {
-        generateValue(builder, program->assign);
+        generateStatement(builder, program->assign);
         a = a->next;
     }
     return generateValue(builder, program->ret);;
@@ -89,6 +93,11 @@ void generate(Program* root, char* filename) {
     }
     LLVMDisposeMessage(error);
     
+    // Print the LLVM IR to stdout
+    char *irCode = LLVMPrintModuleToString(module);
+    printf("%s\n", irCode);
+    LLVMDisposeMessage(irCode);
+
     if (LLVMWriteBitcodeToFile(module, filename)) {
         fprintf(stderr, "Error writing bitcode to file. Skipping.\n");
         exit(2);
