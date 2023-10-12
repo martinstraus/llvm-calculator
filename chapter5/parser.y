@@ -1,8 +1,10 @@
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include "ast.h"
 
 Program* root;
+SymbolsTable* symbols;
 
 %}
 
@@ -40,7 +42,15 @@ statements:
     ;
 
 assign:
-    IDENTIFIER ASSIGN expr { $$ = createAssignNode($1, $3); }
+    IDENTIFIER ASSIGN expr { 
+        $$ = createAssignNode($1, $3);
+        Symbol* s = malloc(sizeof(Symbol));
+        s->name = $$->name;
+        s->value = $$;
+        if (!appendSymbol(symbols, s)) { 
+            fprintf(stderr, "Symbol already defined: %s\n", $1); exit(1); 
+        } 
+    }
     ;
 
 ret:

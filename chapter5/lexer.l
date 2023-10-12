@@ -8,7 +8,7 @@
 
 "//"(.)*[\n]        // Single-line comments.
 [0-9]+              { yylval.number = atoi(yytext); return NUMBER; }
-[a-zA-Z][a-zA-Z_]*  { yylval.text = yytext; return IDENTIFIER; }
+[a-zA-Z][a-zA-Z_]*  { yylval.text = strdup(yytext); return IDENTIFIER; }
 "+"                 { return ADD; }
 "-"                 { return SUB; }
 "*"                 { return MUL; }

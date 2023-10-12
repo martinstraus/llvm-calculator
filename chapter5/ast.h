@@ -1,6 +1,8 @@
 #ifndef GROG_AST
 #define GROG_AST
 
+/* AST */
+
 /*
 For this proof of concept, it seems enough to have a single type.
 In future versions, different enums (for instance, one for arithmetic operations) might be wise.
@@ -31,5 +33,31 @@ typedef struct Program {
 } Program;
 
 Program* createProgram(Node* assign, Node* ret);
+
+/* SYMBOLS TABLE*/
+
+// Each symbol is something defined in assignment statements.
+typedef struct Symbol {
+    char* name;
+    Node* value;
+} Symbol;
+ 
+/*
+This is the most naive symbols table possible: a linked list of symbols. 
+Search is horribly slow with many symbols.
+*/
+typedef struct SymbolsTable {
+    Symbol* symbol;
+    struct SymbolsTable* next;
+} SymbolsTable;
+
+SymbolsTable* createSymbolsTable();
+// Returns NULL if the symbol is not in the table.
+Symbol* findSymbol(SymbolsTable* table, char* name);
+// Returns 0 if the symbol is not in the table, != 0 if it is.
+int containsSymbol(SymbolsTable* table, char* name);
+// Appends a symbol to the table.
+int appendSymbol(SymbolsTable* table, Symbol* symbol);
+
 
 #endif

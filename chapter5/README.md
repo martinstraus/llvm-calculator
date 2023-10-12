@@ -7,11 +7,13 @@ In this chapter we make the grammar more complex, introducing:
 * Variables.
 * Processing multiple lines.
 * Comments.
-* The last line is the output. 
+* The last line is the output.
 
 ## Example input file
 
-    (1+2)/(3*4)
+    a <- 1
+    b <- 3
+    (a+2)/(b*4)
 
 ## How to build
 

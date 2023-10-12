@@ -4,9 +4,10 @@
 #include "ast.h"
 #include "generator.h"
 
-extern FILE* yyin; // This is used to set the input source for the parser
-extern Node* root;
+extern FILE* yyin;            // This is used to set the input source for the parser
+extern Node* root;            // Defined in parser.y
 extern int yylineno;
+extern SymbolsTable* symbols; // Defined in parser.y
 
 void showUsage() {
     fprintf(stderr, "Usage:\n\tgrogc [source file] [output]\n");
@@ -18,6 +19,7 @@ int main(int args, char** argv) {
         exit(1);
     }
     yyin = fopen(argv[1], "r");
+    symbols = createSymbolsTable();
     yyparse();
     generate(root, argv[2]);
     fclose(yyin);

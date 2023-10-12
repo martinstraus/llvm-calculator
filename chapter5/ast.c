@@ -1,5 +1,11 @@
 #include <stdlib.h>
+#include <string.h>
 #include "ast.h"
+
+#define SYMBOL_ADDED 1
+#define SYMBOL_ALREADY_DEFINED 0
+
+/* ABSTRACT SYNTAX TREE */
 
 Node* createIntNode(int number) {
     Node* n = malloc(sizeof(Node));
@@ -41,5 +47,52 @@ Program* createProgram(Node* assign, Node* ret) {
     p->assign = assign;
     p->ret = ret;
     return p;
+}
+
+
+/* 
+    SYMBOLS TABLE
+    All these implementations are incredibly slow, since they traverse the whole linked list.
+*/
+
+SymbolsTable* createSymbolsTable() {
+    SymbolsTable* st = malloc(sizeof(SymbolsTable));
+    st->symbol = NULL;
+    st->next = NULL;
+    return st; 
+}
+
+Symbol* findSymbol(SymbolsTable* table, char* name) {
+    SymbolsTable* t = table;
+    while (t != NULL && !strcmp(name, t->symbol->name)) {
+        t = t->next;
+    }
+    if (t != NULL) {
+        return t->symbol;
+    } else {
+        return NULL;
+    }
+}
+
+// Returns NULL if the symbol is not in the table.
+int containsSymbol(SymbolsTable* table, char* name) {
+    return findSymbol(table, name) != NULL;
+}
+
+// Beware! it does not check if the symbol is in the table. This could be easily optimized.
+int appendSymbol(SymbolsTable* table, Symbol* symbol) {
+    SymbolsTable* t = table;
+    if (t->symbol != NULL && strcmp(t->symbol->name , symbol->name) == 0) {
+        return SYMBOL_ALREADY_DEFINED;
+    } 
+    while (t->next != NULL) {
+        t = t->next;
+        if (t->symbol != NULL && strcmp(t->symbol->name , symbol->name) == 0) {
+            return SYMBOL_ALREADY_DEFINED;
+        }
+    }
+    t->next = malloc(sizeof(SymbolsTable));
+    t->symbol = symbol;
+    return SYMBOL_ADDED;
 }
 
