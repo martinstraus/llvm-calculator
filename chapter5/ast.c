@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "ast.h"
@@ -37,8 +38,13 @@ Node* createAssignNode(char* name, Node* expr){
     return n;
 }
 
-Node* chainStatements(Node* first, Node* second) {
-    first->next = second;
+// Quite inneficient implementation, but it works.
+Node* chainStatements(Node* first, Node* new) {
+    Node* last = first;
+    while (last->next != NULL) {
+        last = last->next;
+    }
+    last->next = new;
     return first;
 }
 
@@ -48,7 +54,6 @@ Program* createProgram(Node* assign, Node* ret) {
     p->ret = ret;
     return p;
 }
-
 
 /* 
     SYMBOLS TABLE
@@ -64,7 +69,7 @@ SymbolsTable* createSymbolsTable() {
 
 Symbol* findSymbol(SymbolsTable* table, char* name) {
     SymbolsTable* t = table;
-    while (t != NULL && !strcmp(name, t->symbol->name)) {
+    while (t != NULL && strcmp(name, t->symbol->name) != 0) {
         t = t->next;
     }
     if (t != NULL) {
@@ -96,3 +101,11 @@ int appendSymbol(SymbolsTable* table, Symbol* symbol) {
     return SYMBOL_ADDED;
 }
 
+void createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value) {
+    Symbol* s = malloc(sizeof(Symbol));
+    s->name = name;
+    s->value = value;
+    if (!appendSymbol(symbols, s)) { 
+        fprintf(stderr, "Symbol already defined: %s\n", name); exit(1); 
+    } 
+}

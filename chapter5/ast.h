@@ -1,4 +1,7 @@
 #ifndef GROG_AST
+
+#include <llvm-c/Core.h>
+
 #define GROG_AST
 
 /* AST */
@@ -40,6 +43,7 @@ Program* createProgram(Node* assign, Node* ret);
 typedef struct Symbol {
     char* name;
     Node* value;
+    LLVMValueRef ref;
 } Symbol;
  
 /*
@@ -58,6 +62,6 @@ Symbol* findSymbol(SymbolsTable* table, char* name);
 int containsSymbol(SymbolsTable* table, char* name);
 // Appends a symbol to the table.
 int appendSymbol(SymbolsTable* table, Symbol* symbol);
-
+void createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value);
 
 #endif

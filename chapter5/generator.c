@@ -13,6 +13,8 @@
 #define false 0
 #define true 1
 
+extern SymbolsTable* symbols; // Defined in parser.y
+
 int vars = 0;
 
 char* newVarName(){
@@ -27,7 +29,12 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
     if (n->type == NT_NUMBER) {
         return LLVMConstInt(LLVMInt32Type(), n->number, false);
     } else if (n->type == NT_REFERENCE) {
-        return LLVMConstInt(LLVMInt32Type(), 0, false);
+        Symbol* symbol = findSymbol(symbols, n->name);
+        if (symbol == NULL) {
+            fprintf(stderr, "Couldn't find symbol %s.\n", n->name);
+            exit(1);
+        }
+        return LLVMBuildLoad2(builder, LLVMInt32Type(), symbol->ref, n->name);
     } else {
         LLVMValueRef left = generateValue(builder, n->left);
         LLVMValueRef right = generateValue(builder, n->right);
@@ -59,15 +66,21 @@ void generateStatement(LLVMBuilderRef builder, Node* n) {
     LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->name);
     LLVMValueRef val = generateValue(builder, n->expr);
     LLVMBuildStore(builder, val, var);
+    Symbol* symbol = findSymbol(symbols, n->name);
+    if (symbol == NULL) {
+        fprintf(stderr, "Couldn't find symbol %s.\n", n->name);
+        exit(1);
+    }
+    symbol->ref = var;
 }
 
 LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
     Node* a = program->assign;
     while (a != NULL) {
-        generateStatement(builder, program->assign);
+        generateStatement(builder, a);
         a = a->next;
     }
-    return generateValue(builder, program->ret);;
+    return generateValue(builder, program->ret);
 }
 
 void generate(Program* root, char* filename) {
