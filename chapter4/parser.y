@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "ast.h"
 
+// These two externs are to avoid warnings while compiling.
+extern int yylex (void);
+void yyerror(const char* s);
+
 Node* root;
 
 %}

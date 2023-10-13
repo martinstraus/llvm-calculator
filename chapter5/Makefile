@@ -5,7 +5,7 @@ LIBS = -lfl -lLLVM-14
 build: parser
 
 parser:
-	bison -Wcounterexamples -v -d -o parser.tab.c parser.y
+	bison -v -d -o parser.tab.c parser.y
 	flex --outfile lexer.yy.c lexer.l
 	gcc -g -o compiler *.c  $(CFLAGS) $(LDFLAGS) $(LIBS)
 
