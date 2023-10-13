@@ -6,7 +6,7 @@ extern FILE* yyin; // This is used to set the input source for the parser
 extern int result;
 
 void showUsage() {
-    fprintf(stderr, "Usage:\n\tgrogc [source file]\n");
+    fprintf(stderr, "Usage:\n\tcompiler [source file]\n");
 }
 
 int main(int args, char** argv) {

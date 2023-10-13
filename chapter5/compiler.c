@@ -10,7 +10,7 @@ extern int yylineno;
 extern SymbolsTable* symbols; // Defined in parser.y
 
 void showUsage() {
-    fprintf(stderr, "Usage:\n\tgrogc [source file] [output]\n");
+    fprintf(stderr, "Usage:\n\tcompiler [source file] [output]\n");
 }
 
 int main(int args, char** argv) {

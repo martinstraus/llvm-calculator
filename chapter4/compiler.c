@@ -8,7 +8,7 @@ extern FILE* yyin; // This is used to set the input source for the parser
 extern Node* root;
 
 void showUsage() {
-    fprintf(stderr, "Usage:\n\tgrogc [source file] [output]\n");
+    fprintf(stderr, "Usage:\n\tcompiler [source file] [output]\n");
 }
 
 int evaluate(Node *n) {
