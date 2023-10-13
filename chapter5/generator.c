@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "ast.h"
 
@@ -83,11 +84,12 @@ LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
     return generateValue(builder, program->ret);
 }
 
-void generate(Program* root, char* filename) {
+void generate(Program* root, char* sourcefile, char* outputfile) {
     // Scaffoling begins...
     LLVMInitializeCore(LLVMGetGlobalPassRegistry());
     atexit(LLVMShutdown);
-    LLVMModuleRef module = LLVMModuleCreateWithName("Grog");
+    LLVMModuleRef module = LLVMModuleCreateWithName("Calculator");
+    LLVMSetSourceFileName(module, sourcefile, strlen(sourcefile));
     LLVMBuilderRef builder = LLVMCreateBuilder();
     LLVMTypeRef int32Type = LLVMInt32TypeInContext(LLVMGetGlobalContext());
     LLVMTypeRef mainType = LLVMFunctionType(int32Type, NULL, 0, 0);
@@ -111,11 +113,11 @@ void generate(Program* root, char* filename) {
     printf("%s\n", irCode);
     LLVMDisposeMessage(irCode);
 
-    if (LLVMWriteBitcodeToFile(module, filename)) {
+    if (LLVMWriteBitcodeToFile(module, outputfile)) {
         fprintf(stderr, "Error writing bitcode to file. Skipping.\n");
         exit(2);
     }
     // Write ends
 
-    chmod(filename, S_IRWXU | S_IRWXG);
+    chmod(outputfile, S_IRWXU | S_IRWXG);
 }

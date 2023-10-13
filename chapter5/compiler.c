@@ -21,7 +21,7 @@ int main(int args, char** argv) {
     yyin = fopen(argv[1], "r");
     symbols = createSymbolsTable();
     yyparse();
-    generate(root, argv[2]);
+    generate(root, argv[1], argv[2]);
     fclose(yyin);
     return 0;
 }

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "ast.h"
 
@@ -54,7 +55,8 @@ void generate(Node* node, char* filename) {
     // Scaffoling begins...
     LLVMInitializeCore(LLVMGetGlobalPassRegistry());
     atexit(LLVMShutdown);
-    LLVMModuleRef module = LLVMModuleCreateWithName("Grog");
+    LLVMModuleRef module = LLVMModuleCreateWithName("Calculator");
+    LLVMSetSourceFileName(module, filename, strlen(filename));
     LLVMBuilderRef builder = LLVMCreateBuilder();
     LLVMTypeRef int32Type = LLVMInt32TypeInContext(LLVMGetGlobalContext());
     LLVMTypeRef mainType = LLVMFunctionType(int32Type, NULL, 0, 0);

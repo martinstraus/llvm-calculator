@@ -2,6 +2,6 @@
 
 #define GENERATOR_H
 
-void generate(Node* node, char* filename);
+void generate(Node* node, char* sourcefile, char* outputfile);
 
 #endif
