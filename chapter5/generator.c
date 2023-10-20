@@ -77,11 +77,6 @@ void generateStatement(LLVMBuilderRef builder, Node* n) {
 }
 
 LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
-    /*LLVMValueRef ret = LLVMBuildAlloca(builder, LLVMInt32Type(), "ret");
-    LLVMValueRef value = generateValue(builder, n);
-    LLVMBuildStore(builder, value, ret);
-    LLVMValueRef loadedValue = LLVMBuildLoad2(builder, LLVMInt32Type(), value, "ret");
-    return LLVMBuildRet(builder, loadedValue);*/
     LLVMValueRef ret = generateValue(builder, n);
     return LLVMBuildRet(builder, ret);
 }
@@ -112,9 +107,9 @@ void generate(Program* root, char* sourcefile, char* outputfile) {
     generateProgram(builder, root);
     
     // Print the LLVM IR to stdout
-    char *irCode = LLVMPrintModuleToString(module);
+    /*char *irCode = LLVMPrintModuleToString(module);
     printf("%s\n", irCode);
-    LLVMDisposeMessage(irCode);
+    LLVMDisposeMessage(irCode);*/
 
     // Write begins...
     char *error = NULL;

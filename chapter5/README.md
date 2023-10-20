@@ -5,6 +5,7 @@
 In this chapter we make the grammar more complex, introducing:
 * Grouping expressions with parenthesis.
 * Variables.
+* Very, very simple symbols table.
 * Processing multiple lines.
 * Comments.
 * The last line is the output.
