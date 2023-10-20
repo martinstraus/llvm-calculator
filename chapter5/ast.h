@@ -20,7 +20,7 @@ typedef struct Node {
     char* name;         // used only when type == NT_REFERENCE
     struct Node *left;  // used only when type == on of the arithmetic operations
     struct Node *right; // used only when type == on of the arithmetic operations
-    struct Node *expr;  // used only when type == NT_ASSIGN
+    struct Node *expr;  // used only when type == NT_ASSIGN or NT_RETURN
     struct Node *next;  // used only when type == NT_ASSIGN, in order to implement a list of assignments.
 } Node;
 

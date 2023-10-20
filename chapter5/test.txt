@@ -1,6 +1,5 @@
 // This is a test file
 
-aa <- 1;
-bb <- 2;
-cc <- 3;
-bb;
+a<-1;
+b<-2;
+a+b;

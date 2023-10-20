@@ -21,7 +21,7 @@ int vars = 0;
 char* newVarName(){
     ++vars;
     char* name = malloc(sizeof(char) * 3);
-    sprintf(name, "%d", vars);
+    sprintf(name, "tmp%d", vars);
     return name;
 }
 
@@ -35,7 +35,8 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
             fprintf(stderr, "Couldn't find symbol %s.\n", n->name);
             exit(1);
         }
-        return LLVMBuildLoad2(builder, LLVMInt32Type(), symbol->ref, n->name);
+        return LLVMBuildLoad2(builder, LLVMInt32Type(), symbol->ref, newVarName());
+        //return symbol->ref;
     } else {
         LLVMValueRef left = generateValue(builder, n->left);
         LLVMValueRef right = generateValue(builder, n->right);
@@ -75,13 +76,23 @@ void generateStatement(LLVMBuilderRef builder, Node* n) {
     symbol->ref = var;
 }
 
+LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
+    /*LLVMValueRef ret = LLVMBuildAlloca(builder, LLVMInt32Type(), "ret");
+    LLVMValueRef value = generateValue(builder, n);
+    LLVMBuildStore(builder, value, ret);
+    LLVMValueRef loadedValue = LLVMBuildLoad2(builder, LLVMInt32Type(), value, "ret");
+    return LLVMBuildRet(builder, loadedValue);*/
+    LLVMValueRef ret = generateValue(builder, n);
+    return LLVMBuildRet(builder, ret);
+}
+
 LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
     Node* a = program->assign;
     while (a != NULL) {
         generateStatement(builder, a);
         a = a->next;
     }
-    return generateValue(builder, program->ret);
+    return generateReturn(builder, program->ret);
 }
 
 void generate(Program* root, char* sourcefile, char* outputfile) {
@@ -98,8 +109,12 @@ void generate(Program* root, char* sourcefile, char* outputfile) {
     LLVMPositionBuilderAtEnd(builder, entryBlock);
     // Scaffoling ends...
 
-    LLVMValueRef result = generateProgram(builder, root);
-    LLVMBuildRet(builder, result);
+    generateProgram(builder, root);
+    
+    // Print the LLVM IR to stdout
+    char *irCode = LLVMPrintModuleToString(module);
+    printf("%s\n", irCode);
+    LLVMDisposeMessage(irCode);
 
     // Write begins...
     char *error = NULL;
@@ -107,11 +122,6 @@ void generate(Program* root, char* sourcefile, char* outputfile) {
         fprintf(stderr, "Error verifying module: %s\n", error);
     }
     LLVMDisposeMessage(error);
-    
-    // Print the LLVM IR to stdout
-    char *irCode = LLVMPrintModuleToString(module);
-    printf("%s\n", irCode);
-    LLVMDisposeMessage(irCode);
 
     if (LLVMWriteBitcodeToFile(module, outputfile)) {
         fprintf(stderr, "Error writing bitcode to file. Skipping.\n");
