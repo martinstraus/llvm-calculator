@@ -7,6 +7,7 @@
 %%
 
 "//"(.)*[\n]        // Single-line comments.
+^[ \t\r]*\n         { /* Ignore empty lines */ }
 [0-9]+              { yylval.number = atoi(yytext); return NUMBER; }
 [a-zA-Z][a-zA-Z_]*  { yylval.text = strdup(yytext); return IDENTIFIER; }
 "+"                 { return ADD; }
@@ -17,7 +18,8 @@
 ")"                 { return RPAREN; }
 "<-"                { return ASSIGN; }
 ";"                 { return SEMICOLON; }
-[ \t\n]             { /* Ignore whitespace and tabs */ }
+\n                  { return EOL; }
+[ \t\r]             { /* Ignore whitespace and tabs */ }
 .                   { fprintf(stderr, "Unexpected character: %s\n", yytext); }
 
 %%

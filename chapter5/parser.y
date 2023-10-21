@@ -36,13 +36,13 @@ SymbolsTable* symbols;
 %%
 
 /* Start symbol */
-calc: statements ret end { root = createProgram($1, $2); }
+calc: statements ret YYEOF { root = createProgram($1, $2); }
     ;
 
 statements:
-    statements assign SEMICOLON { $$ = chainStatements($1, $2); }
-    | assign SEMICOLON          { $$ = $1;   }
-    |                           { $$ = NULL; }
+    statements assign EOL { $$ = chainStatements($1, $2); }
+    | assign EOL          { $$ = $1;   }
+    |                     { $$ = NULL; }
     ;
 
 assign:
@@ -53,11 +53,7 @@ assign:
     ;
 
 ret:
-    expr SEMICOLON { $$ = $1; }
-    ;
-
-end:
-    YYEOF
+    expr EOL { $$ = $1; }
     ;
 
 /* Expressions */
