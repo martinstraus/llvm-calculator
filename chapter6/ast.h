@@ -11,8 +11,9 @@ For this proof of concept, it seems enough to have a single type.
 In future versions, different enums (for instance, one for arithmetic operations) might be wise.
 */
 typedef enum NodeType {
-    NT_NUMBER, NT_REFERENCE, NT_ADD, NT_SUB, NT_MUL, NT_DIV, NT_ASSIGN
+    NT_NUMBER, NT_REFERENCE, NT_ADD, NT_SUB, NT_MUL, NT_DIV, NT_ASSIGN, NT_FUNCTION_DEF
 } NodeType;
+
 
 typedef struct Node {
     NodeType type;
@@ -22,7 +23,18 @@ typedef struct Node {
     struct Node *right; // used only when type == on of the arithmetic operations
     struct Node *expr;  // used only when type == NT_ASSIGN or NT_RETURN
     struct Node *next;  // used only when type == NT_ASSIGN, in order to implement a list of assignments.
+    struct FunctionDef* functionDef;
 } Node;
+
+typedef struct ParameterDef {
+    char* name;
+} ParameterDef;
+
+typedef struct FunctionDef {
+    char* name;
+    ParameterDef** parameters;
+    Node* expr;
+} FunctionDef;
 
 Node* createIntNode(int value);
 Node* createReferenceNode(char* name);
