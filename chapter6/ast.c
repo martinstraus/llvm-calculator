@@ -109,3 +109,34 @@ void createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value) {
         fprintf(stderr, "Symbol already defined: %s\n", name); exit(1); 
     } 
 }
+
+// Functions definitions
+ParameterDef* createParameterDef(char* name) {
+    ParameterDef* pd = malloc(sizeof(ParameterDef));
+    pd->name = name;
+    return pd;
+}
+
+ParameterDefList* appendParameterDef(ParameterDefList* list, ParameterDef* parameter) {
+    ParameterDefList* l = list;
+    while (l->next != NULL) {
+        l = l->next;
+    }
+    l->next = createParameterDefList(parameter);
+    return list;
+}
+
+ParameterDefList* createParameterDefList(ParameterDef* first) {
+    ParameterDefList* list = (ParameterDefList*) malloc(sizeof(ParameterDefList));
+    list->value = first;
+    list->next = NULL;
+    return list;
+}
+
+FunctionDef* createFunctionDef(char* name, ParameterDefList* parameters, Node* expression) {
+    FunctionDef* fd = malloc(sizeof(FunctionDef));
+    fd->name = name;
+    fd->parameters = parameters;
+    fd->expr = expression;
+    return fd;
+}

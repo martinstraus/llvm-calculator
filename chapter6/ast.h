@@ -26,16 +26,6 @@ typedef struct Node {
     struct FunctionDef* functionDef;
 } Node;
 
-typedef struct ParameterDef {
-    char* name;
-} ParameterDef;
-
-typedef struct FunctionDef {
-    char* name;
-    ParameterDef** parameters;
-    Node* expr;
-} FunctionDef;
-
 Node* createIntNode(int value);
 Node* createReferenceNode(char* name);
 Node* createExprNode(NodeType type, Node* left, Node* right);
@@ -48,6 +38,26 @@ typedef struct Program {
 } Program;
 
 Program* createProgram(Node* assign, Node* ret);
+
+typedef struct ParameterDef {
+    char* name;
+} ParameterDef;
+
+typedef struct ParameterDefList {
+    ParameterDef* value;
+    struct ParameterDefList* next;
+} ParameterDefList;
+
+typedef struct FunctionDef {
+    char* name;
+    ParameterDefList* parameters;
+    Node* expr;
+} FunctionDef;
+
+ParameterDef* createParameterDef(char* name);
+FunctionDef* createFunctionDef(char* name, ParameterDefList* parameters, Node* expression);
+ParameterDefList* appendParameterDef(ParameterDefList* list, ParameterDef* parameter);
+ParameterDefList* createParameterDefList(ParameterDef* first);
 
 /* SYMBOLS TABLE*/
 

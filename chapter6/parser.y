@@ -17,6 +17,9 @@ SymbolsTable* symbols;
     char* text;
     struct Node* node;
     struct Program* program;
+    struct FunctionDef* function;
+    struct ParameterDef* parameter;
+    struct ParameterDefList* parameters;
 }
 
 /* Define tokens */
@@ -30,6 +33,9 @@ SymbolsTable* symbols;
 
 %type <program> calc
 %type <node> expr assign ret statements
+%type <function> function
+%type <parameter> parameter
+%type <parameters> parameters
 
 %left ADD SUB
 %left MUL DIV
@@ -47,13 +53,17 @@ functions:
     ;
 
 function:
-    FUNCTION IDENTIFIER LPAREN parameters RPAREN ASSIGN expr
+    FUNCTION IDENTIFIER LPAREN parameters RPAREN ASSIGN expr { $$ = createFunctionDef($2, $4, $7); }
     ;
 
 parameters:
-    parameters COMMA IDENTIFIER
-    | IDENTIFIER
-    |
+    parameters COMMA parameter  { $$ = appendParameterDef($1, $3); }
+    | parameter                 { $$ = createParameterDefList($1); }
+    |                           { $$ = NULL; }
+    ;
+
+parameter:
+    IDENTIFIER                  { $$ = createParameterDef($1); }
     ;
 
 statements:
