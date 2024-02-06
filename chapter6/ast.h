@@ -48,14 +48,14 @@ typedef struct ParameterDefList {
     struct ParameterDefList* next;
 } ParameterDefList;
 
-typedef struct FunctionDef {
+typedef struct FunctionNode {
     char* name;
     ParameterDefList* parameters;
     Node* expr;
-} FunctionDef;
+} FunctionNode;
 
 ParameterDef* createParameterDef(char* name);
-FunctionDef* createFunctionDef(char* name, ParameterDefList* parameters, Node* expression);
+FunctionNode* createFunctionNode(char* name, ParameterDefList* parameters, Node* expression);
 ParameterDefList* appendParameterDef(ParameterDefList* list, ParameterDef* parameter);
 ParameterDefList* createParameterDefList(ParameterDef* first);
 

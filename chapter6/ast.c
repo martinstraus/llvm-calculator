@@ -133,8 +133,8 @@ ParameterDefList* createParameterDefList(ParameterDef* first) {
     return list;
 }
 
-FunctionDef* createFunctionDef(char* name, ParameterDefList* parameters, Node* expression) {
-    FunctionDef* fd = malloc(sizeof(FunctionDef));
+FunctionNode* createFunctionNode(char* name, ParameterDefList* parameters, Node* expression) {
+    FunctionNode* fd = malloc(sizeof(FunctionNode));
     fd->name = name;
     fd->parameters = parameters;
     fd->expr = expression;

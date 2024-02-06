@@ -17,7 +17,7 @@ SymbolsTable* symbols;
     char* text;
     struct Node* node;
     struct Program* program;
-    struct FunctionDef* function;
+    struct FunctionNode* function;
     struct ParameterDef* parameter;
     struct ParameterDefList* parameters;
 }
@@ -53,7 +53,7 @@ functions:
     ;
 
 function:
-    FUNCTION IDENTIFIER LPAREN parameters RPAREN ASSIGN expr { $$ = createFunctionDef($2, $4, $7); }
+    FUNCTION IDENTIFIER LPAREN parameters RPAREN ASSIGN expr { $$ = createFunctionNode($2, $4, $7); }
     ;
 
 parameters:
