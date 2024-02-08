@@ -111,29 +111,22 @@ void createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value) {
 }
 
 // Functions definitions
-ParameterDef* createParameterDef(char* name) {
-    ParameterDef* pd = malloc(sizeof(ParameterDef));
+ParameterNode* createParameterNode(char* name) {
+    ParameterNode* pd = malloc(sizeof(ParameterNode));
     pd->name = name;
     return pd;
 }
 
-ParameterDefList* appendParameterDef(ParameterDefList* list, ParameterDef* parameter) {
-    ParameterDefList* l = list;
+ParameterNode* appendParameterNode(ParameterNode* first, ParameterNode* next) {
+    ParameterNode* l = first;
     while (l->next != NULL) {
         l = l->next;
     }
-    l->next = createParameterDefList(parameter);
-    return list;
+    l->next = next;
+    return l;
 }
 
-ParameterDefList* createParameterDefList(ParameterDef* first) {
-    ParameterDefList* list = (ParameterDefList*) malloc(sizeof(ParameterDefList));
-    list->value = first;
-    list->next = NULL;
-    return list;
-}
-
-FunctionNode* createFunctionNode(char* name, ParameterDefList* parameters, Node* expression) {
+FunctionNode* createFunctionNode(char* name, ParameterNode* parameters, Node* expression) {
     FunctionNode* fd = malloc(sizeof(FunctionNode));
     fd->name = name;
     fd->parameters = parameters;

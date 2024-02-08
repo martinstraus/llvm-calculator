@@ -39,25 +39,21 @@ typedef struct Program {
 
 Program* createProgram(Node* assign, Node* ret);
 
-typedef struct ParameterDef {
+typedef struct ParameterNode {
     char* name;
-} ParameterDef;
+    struct ParameterNode* next;
+} ParameterNode;
 
-typedef struct ParameterDefList {
-    ParameterDef* value;
-    struct ParameterDefList* next;
-} ParameterDefList;
 
 typedef struct FunctionNode {
     char* name;
-    ParameterDefList* parameters;
+    ParameterNode* parameters;
     Node* expr;
 } FunctionNode;
 
-ParameterDef* createParameterDef(char* name);
-FunctionNode* createFunctionNode(char* name, ParameterDefList* parameters, Node* expression);
-ParameterDefList* appendParameterDef(ParameterDefList* list, ParameterDef* parameter);
-ParameterDefList* createParameterDefList(ParameterDef* first);
+ParameterNode* createParameterNode(char* name);
+FunctionNode* createFunctionNode(char* name, ParameterNode* parameters, Node* expression);
+ParameterNode* appendParameterNode(ParameterNode* list, ParameterNode* parameter);
 
 /* SYMBOLS TABLE*/
 

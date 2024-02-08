@@ -18,8 +18,8 @@ SymbolsTable* symbols;
     struct Node* node;
     struct Program* program;
     struct FunctionNode* function;
-    struct ParameterDef* parameter;
-    struct ParameterDefList* parameters;
+    struct ParameterNode* parameter;
+    struct ParameterNode* parameters;
 }
 
 /* Define tokens */
@@ -57,13 +57,13 @@ function:
     ;
 
 parameters:
-    parameters COMMA parameter  { $$ = appendParameterDef($1, $3); }
-    | parameter                 { $$ = createParameterDefList($1); }
+    parameters COMMA parameter  { $$ = appendParameterNode($1, $3); }
+    | parameter                 { $$ = $1; }
     |                           { $$ = NULL; }
     ;
 
 parameter:
-    IDENTIFIER                  { $$ = createParameterDef($1); }
+    IDENTIFIER                  { $$ = createParameterNode($1); }
     ;
 
 statements:
