@@ -51,7 +51,7 @@ calc: functions statements ret YYEOF { root = createProgram($1, $2, $3); }
 functions:
     functions function EOL  { $$ = addFunctionNode($1, $2); }
     | function EOL          { $$ = $1; }
-    |
+    |                       { $$ = NULL; }
     ;
 
 function:
