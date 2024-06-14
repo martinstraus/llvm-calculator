@@ -48,8 +48,9 @@ Node* chainStatements(Node* first, Node* new) {
     return first;
 }
 
-Program* createProgram(Node* assign, Node* ret) {
+Program* createProgram(FunctionNode* functions, Node* assign, Node* ret) {
     Program* p = malloc(sizeof(Program));
+    p->functions = functions;
     p->assign = assign;
     p->ret = ret;
     return p;
@@ -132,4 +133,13 @@ FunctionNode* createFunctionNode(char* name, ParameterNode* parameters, Node* ex
     fd->parameters = parameters;
     fd->expr = expression;
     return fd;
+}
+
+FunctionNode* addFunctionNode(FunctionNode* first, FunctionNode* function) {
+    FunctionNode* f = first;
+    while(f->next != NULL) {
+        f = f->next;
+    }
+    f->next = function;
+    return first;
 }

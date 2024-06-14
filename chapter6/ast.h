@@ -23,7 +23,7 @@ typedef struct Node {
     struct Node *right; // used only when type == on of the arithmetic operations
     struct Node *expr;  // used only when type == NT_ASSIGN or NT_RETURN
     struct Node *next;  // used only when type == NT_ASSIGN, in order to implement a list of assignments.
-    struct FunctionDef* functionDef;
+    struct FunctionNode* functionDef;
 } Node;
 
 Node* createIntNode(int value);
@@ -32,27 +32,29 @@ Node* createExprNode(NodeType type, Node* left, Node* right);
 Node* createAssignNode(char* name, Node* expr);
 Node* chainStatements(Node* first, Node* second);
 
-typedef struct Program {
-    Node* assign;   // This should be changed to a list of statements.
-    Node* ret;      // The return expression.
-} Program;
-
-Program* createProgram(Node* assign, Node* ret);
-
 typedef struct ParameterNode {
     char* name;
     struct ParameterNode* next;
 } ParameterNode;
 
-
 typedef struct FunctionNode {
     char* name;
     ParameterNode* parameters;
     Node* expr;
+    struct FunctionNode* next;
 } FunctionNode;
 
-ParameterNode* createParameterNode(char* name);
+typedef struct Program {
+    FunctionNode* functions; 
+    Node* assign;   // This should be changed to a list of statements.
+    Node* ret;      // The return expression.
+} Program;
+
+Program* createProgram(FunctionNode* functions, Node* assign, Node* ret);
+
 FunctionNode* createFunctionNode(char* name, ParameterNode* parameters, Node* expression);
+FunctionNode* addFunctionNode(FunctionNode* first, FunctionNode* function);
+ParameterNode* createParameterNode(char* name);
 ParameterNode* appendParameterNode(ParameterNode* list, ParameterNode* parameter);
 
 /* SYMBOLS TABLE*/

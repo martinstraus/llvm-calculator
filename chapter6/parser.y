@@ -18,6 +18,7 @@ SymbolsTable* symbols;
     struct Node* node;
     struct Program* program;
     struct FunctionNode* function;
+    struct FunctionNode* functions;
     struct ParameterNode* parameter;
     struct ParameterNode* parameters;
 }
@@ -34,6 +35,7 @@ SymbolsTable* symbols;
 %type <program> calc
 %type <node> expr assign ret statements
 %type <function> function
+%type <functions> functions
 %type <parameter> parameter
 %type <parameters> parameters
 
@@ -43,12 +45,12 @@ SymbolsTable* symbols;
 %%
 
 /* Start symbol */
-calc: functions statements ret YYEOF { root = createProgram($2, $3); }
+calc: functions statements ret YYEOF { root = createProgram($1, $2, $3); }
     ;
 
 functions:
-    functions function EOL
-    | function EOL
+    functions function EOL  { $$ = addFunctionNode($1, $2); }
+    | function EOL          { $$ = $1; }
     |
     ;
 
