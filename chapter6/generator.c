@@ -83,8 +83,19 @@ LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
 
 // Not fully implemented yet
 LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, FunctionNode* f) {
+    // Perhaps not the most beautiful code ever produced...
     LLVMTypeRef int32Type = LLVMInt32Type();
-    LLVMTypeRef mainType = LLVMFunctionType(int32Type, NULL, 0, 0);
+    int paramCount = 0;
+    ParameterNode* p = f->parameters;
+    while(p != NULL) {
+        paramCount++;
+        p=p->next;
+    }
+    LLVMTypeRef* parametersTypes = malloc(sizeof(LLVMTypeRef) * paramCount);
+    for(int i = 0; i < paramCount; i++) {
+        parametersTypes[i] = int32Type;
+    }
+    LLVMTypeRef mainType = LLVMFunctionType(int32Type, parametersTypes, paramCount, false);
     LLVMValueRef mainFunction = LLVMAddFunction(module, f->name, mainType);
     LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(mainFunction, "entry");
     LLVMPositionBuilderAtEnd(builder, entryBlock);
