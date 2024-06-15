@@ -81,13 +81,41 @@ LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
     return LLVMBuildRet(builder, ret);
 }
 
-LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
+// Not fully implemented yet
+LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, FunctionNode* f) {
+    LLVMTypeRef int32Type = LLVMInt32Type();
+    LLVMTypeRef mainType = LLVMFunctionType(int32Type, NULL, 0, 0);
+    LLVMValueRef mainFunction = LLVMAddFunction(module, f->name, mainType);
+    LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(mainFunction, "entry");
+    LLVMPositionBuilderAtEnd(builder, entryBlock);
+
+    LLVMValueRef ret = LLVMConstInt(int32Type, 0, false);
+    return LLVMBuildRet(builder, ret);
+}
+
+LLVMValueRef generateMainFunction(LLVMBuilderRef builder, LLVMModuleRef module, Program* program) {
+    LLVMTypeRef int32Type = LLVMInt32Type();
+    LLVMTypeRef functionType = LLVMFunctionType(int32Type, NULL, 0, 0);
+    LLVMValueRef function = LLVMAddFunction(module, "main", functionType);
+    LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(function, "entry");
+    LLVMPositionBuilderAtEnd(builder, entryBlock);
+
     Node* a = program->assign;
     while (a != NULL) {
         generateStatement(builder, a);
         a = a->next;
     }
     return generateReturn(builder, program->ret);
+}
+
+LLVMValueRef generateProgram(LLVMBuilderRef builder, LLVMModuleRef module, Program* program) {
+    FunctionNode* f = program->functions;
+    while(f != NULL) {
+        generateFunction(builder, module, f);
+        f = f->next;
+    }
+
+    generateMainFunction(builder, module, program);
 }
 
 void generate(Program* root, char* sourcefile, char* outputfile) {
@@ -97,27 +125,23 @@ void generate(Program* root, char* sourcefile, char* outputfile) {
     LLVMModuleRef module = LLVMModuleCreateWithName("Calculator");
     LLVMSetSourceFileName(module, sourcefile, strlen(sourcefile));
     LLVMBuilderRef builder = LLVMCreateBuilder();
-    LLVMTypeRef int32Type = LLVMInt32TypeInContext(LLVMGetGlobalContext());
-    LLVMTypeRef mainType = LLVMFunctionType(int32Type, NULL, 0, 0);
-    LLVMValueRef mainFunction = LLVMAddFunction(module, "main", mainType);
-    LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(mainFunction, "entry");
-    LLVMPositionBuilderAtEnd(builder, entryBlock);
     // Scaffoling ends...
 
-    generateProgram(builder, root);
+    generateProgram(builder, module, root);
     
-    // Print the LLVM IR to stdout
-    /*char *irCode = LLVMPrintModuleToString(module);
-    printf("%s\n", irCode);
-    LLVMDisposeMessage(irCode);*/
-
-    // Write begins...
+    // Verify module
     char *error = NULL;
     if (LLVMVerifyModule(module, LLVMAbortProcessAction, &error)) {
         fprintf(stderr, "Error verifying module: %s\n", error);
     }
     LLVMDisposeMessage(error);
 
+    // Print the LLVM IR to stdout
+    char *irCode = LLVMPrintModuleToString(module);
+    printf("%s\n", irCode);
+    LLVMDisposeMessage(irCode);
+
+    // Write begins...
     if (LLVMWriteBitcodeToFile(module, outputfile)) {
         fprintf(stderr, "Error writing bitcode to file. Skipping.\n");
         exit(2);
