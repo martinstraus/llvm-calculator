@@ -89,7 +89,7 @@ LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Func
     LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(mainFunction, "entry");
     LLVMPositionBuilderAtEnd(builder, entryBlock);
 
-    LLVMValueRef ret = LLVMConstInt(int32Type, 0, false);
+    LLVMValueRef ret = generateValue(builder, f->expr);
     return LLVMBuildRet(builder, ret);
 }
 
