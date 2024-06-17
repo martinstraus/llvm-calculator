@@ -82,6 +82,6 @@ Symbol* findSymbol(SymbolsTable* table, char* name);
 int containsSymbol(SymbolsTable* table, char* name);
 // Appends a symbol to the table.
 int appendSymbol(SymbolsTable* table, Symbol* symbol);
-void createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value);
+Symbol* createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value);
 
 #endif

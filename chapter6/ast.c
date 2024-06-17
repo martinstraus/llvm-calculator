@@ -102,13 +102,14 @@ int appendSymbol(SymbolsTable* table, Symbol* symbol) {
     return SYMBOL_ADDED;
 }
 
-void createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value) {
+Symbol* createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value) {
     Symbol* s = malloc(sizeof(Symbol));
     s->name = name;
     s->value = value;
     if (!appendSymbol(symbols, s)) { 
         fprintf(stderr, "Symbol already defined: %s\n", name); exit(1); 
-    } 
+    }
+    return s;
 }
 
 // Functions definitions

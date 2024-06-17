@@ -75,10 +75,7 @@ statements:
     ;
 
 assign:
-    IDENTIFIER ASSIGN expr { 
-        $$ = createAssignNode($1, $3);
-        createAndAddSymbol(symbols, $$->name, $$);
-    }
+    IDENTIFIER ASSIGN expr { $$ = createAssignNode($1, $3); }
     ;
 
 ret:

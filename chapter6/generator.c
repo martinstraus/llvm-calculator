@@ -68,7 +68,7 @@ void generateStatement(LLVMBuilderRef builder, Node* n) {
     LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->name);
     LLVMValueRef val = generateValue(builder, n->expr);
     LLVMBuildStore(builder, val, var);
-    Symbol* symbol = findSymbol(symbols, n->name);
+    Symbol* symbol = createAndAddSymbol(symbols, n->name, n);
     if (symbol == NULL) {
         fprintf(stderr, "Couldn't find symbol %s.\n", n->name);
         exit(1);
