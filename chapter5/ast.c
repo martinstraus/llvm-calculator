@@ -42,23 +42,29 @@ Node* createAssignNode(char* name, Node* expr){
     return n;
 }
 
-Node* createProgram(Node* assign, Node* ret) {
+Node* createProgram(NodeList* statements, Node* ret) {
     Node* n= malloc(sizeof(Node));
     n->type = NT_PROGRAM;
     n->program = malloc(sizeof(Program));
-    n->program->assign = assign;
+    n->program->statements = statements;
     n->program->ret = ret;
     return n;
 }
 
-// Quite inneficient implementation, but it works.
-Node* chainStatements(Node* first, Node* new) {
-    Node* last = first;
-    while (last->next != NULL) {
+NodeList* createNodeList(Node* first) {
+    NodeList* list = malloc(sizeof(NodeList));
+    list->node = first;
+    list->next = NULL;
+    return list;
+}
+
+NodeList* appendNode(NodeList* list, Node* next) {
+    NodeList* last = list;
+    while(last->next != NULL) {
         last = last->next;
     }
-    last->next = new;
-    return first;
+    last->next = createNodeList(next);
+    return list;
 }
 
 /* 

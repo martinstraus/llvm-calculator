@@ -23,6 +23,7 @@ typedef struct Node Node;
 typedef struct Assign Assign;
 typedef struct Reference Reference;
 typedef struct Program Program;
+typedef struct NodeList NodeList;
 
 struct Node {
     NodeType type;
@@ -31,7 +32,11 @@ struct Node {
     ArithmeticExpression* arithmeticExpression; // used only when type == NT_ARITHMETIC_EXPRESSION
     Assign* assign;                             // used only when type == NT_ASSIGN
     Program* program;                           // used only when type == NT_PROGRAM
-    struct Node *next;                          // used only when type == NT_ASSIGN, for implementing a list of assignments.
+};
+
+struct NodeList {
+    Node* node;
+    NodeList* next;
 };
 
 struct ArithmeticExpression {
@@ -50,8 +55,8 @@ struct Reference {
 };
 
 struct Program {
-    Node* assign;   // This should be changed to a list of statements.
-    Node* ret;      // The return expression.
+    NodeList* statements;
+    Node* ret;
 };
 
 Node* createIntNode(int value);
@@ -59,7 +64,9 @@ Node* createReferenceNode(char* name);
 Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right);
 Node* createAssignNode(char* name, Node* expr);
 Node* chainStatements(Node* first, Node* second);
-Node* createProgram(Node* assign, Node* ret);
+NodeList* createNodeList(Node* first);
+NodeList* appendNode(NodeList* list, Node* next);
+Node* createProgram(NodeList* statements, Node* ret);
 
 /* SYMBOLS TABLE*/
 

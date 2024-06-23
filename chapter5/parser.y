@@ -16,7 +16,7 @@ SymbolsTable* symbols;
     int number;
     char* text;
     struct Node* node;
-    struct Program* program;
+    struct NodeList* statements;
 }
 
 /* Define tokens */
@@ -27,8 +27,8 @@ SymbolsTable* symbols;
 %token ASSIGN
 %token SEMICOLON EOL
 
-%type <program> calc
-%type <node> expr assign ret statements
+%type <node> calc expr assign ret
+%type <statements> statements
 
 %left ADD SUB
 %left MUL DIV
@@ -40,8 +40,8 @@ calc: statements ret YYEOF { root = createProgram($1, $2); }
     ;
 
 statements:
-    statements assign EOL { $$ = chainStatements($1, $2); }
-    | assign EOL          { $$ = $1;   }
+    statements assign EOL { $$ = appendNode($1, $2); }
+    | assign EOL          { $$ = createNodeList($1); }
     |                     { $$ = NULL; }
     ;
 

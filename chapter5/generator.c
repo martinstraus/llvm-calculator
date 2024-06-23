@@ -103,10 +103,10 @@ LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
 }
 
 LLVMValueRef generateProgram(LLVMBuilderRef builder, Node* n) {
-    Node* a = n->program->assign;
-    while (a != NULL) {
-        generateStatement(builder, a);
-        a = a->next;
+    NodeList* statement = n->program->statements;
+    while (statement != NULL) {
+        generateStatement(builder, statement->node);
+        statement = statement->next;
     }
     return generateReturn(builder, n->program->ret);
 }
