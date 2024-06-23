@@ -24,7 +24,7 @@ typedef struct Assign Assign;
 typedef struct Reference Reference;
 typedef struct Program Program;
 
-typedef struct Node {
+struct Node {
     NodeType type;
     int number;                                 // used only when type == NT_NUMBER
     Reference* reference;                       // used only when type == NT_REFERENCE
@@ -32,7 +32,7 @@ typedef struct Node {
     Assign* assign;                             // used only when type == NT_ASSIGN
     Program* program;                           // used only when type == NT_PROGRAM
     struct Node *next;                          // used only when type == NT_ASSIGN, for implementing a list of assignments.
-} Node;
+};
 
 struct ArithmeticExpression {
     ArithmeticOperator operator;
