@@ -7,7 +7,7 @@
 extern int yylex (void);
 void yyerror(const char* s);
 
-Program* root;
+Node* root;
 SymbolsTable* symbols;
 
 %}

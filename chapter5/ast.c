@@ -42,6 +42,15 @@ Node* createAssignNode(char* name, Node* expr){
     return n;
 }
 
+Node* createProgram(Node* assign, Node* ret) {
+    Node* n= malloc(sizeof(Node));
+    n->type = NT_PROGRAM;
+    n->program = malloc(sizeof(Program));
+    n->program->assign = assign;
+    n->program->ret = ret;
+    return n;
+}
+
 // Quite inneficient implementation, but it works.
 Node* chainStatements(Node* first, Node* new) {
     Node* last = first;
@@ -50,13 +59,6 @@ Node* chainStatements(Node* first, Node* new) {
     }
     last->next = new;
     return first;
-}
-
-Program* createProgram(Node* assign, Node* ret) {
-    Program* p = malloc(sizeof(Program));
-    p->assign = assign;
-    p->ret = ret;
-    return p;
 }
 
 /* 

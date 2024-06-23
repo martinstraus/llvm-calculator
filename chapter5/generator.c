@@ -32,7 +32,7 @@ LLVMValueRef generateReference(LLVMBuilderRef builder, Node* n);
 LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n);
 void generateStatement(LLVMBuilderRef builder, Node* n);
 LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n);
-LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program);
+LLVMValueRef generateProgram(LLVMBuilderRef builder, Node* program);
 
 LLVMValueRef generateNumberValue(LLVMBuilderRef builder, Node* n) {
     return LLVMConstInt(LLVMInt32Type(), n->number, false);
@@ -102,16 +102,16 @@ LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
     return LLVMBuildRet(builder, ret);
 }
 
-LLVMValueRef generateProgram(LLVMBuilderRef builder, Program* program) {
-    Node* a = program->assign;
+LLVMValueRef generateProgram(LLVMBuilderRef builder, Node* n) {
+    Node* a = n->program->assign;
     while (a != NULL) {
         generateStatement(builder, a);
         a = a->next;
     }
-    return generateReturn(builder, program->ret);
+    return generateReturn(builder, n->program->ret);
 }
 
-void generate(Program* root, char* sourcefile, char* outputfile) {
+void generate(Node* root, char* sourcefile, char* outputfile) {
     // Scaffoling begins...
     LLVMInitializeCore(LLVMGetGlobalPassRegistry());
     atexit(LLVMShutdown);

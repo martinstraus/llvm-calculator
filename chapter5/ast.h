@@ -11,7 +11,7 @@ For this proof of concept, it seems enough to have a single type.
 In future versions, different enums (for instance, one for arithmetic operations) might be wise.
 */
 typedef enum NodeType {
-    NT_NUMBER, NT_ARITHMETIC_EXPRESSION, NT_REFERENCE, NT_ASSIGN
+    NT_NUMBER, NT_ARITHMETIC_EXPRESSION, NT_REFERENCE, NT_ASSIGN, NT_PROGRAM
 } NodeType;
 
 typedef enum ArithmeticOperator {
@@ -22,6 +22,7 @@ typedef struct ArithmeticExpression ArithmeticExpression;
 typedef struct Node Node;
 typedef struct Assign Assign;
 typedef struct Reference Reference;
+typedef struct Program Program;
 
 typedef struct Node {
     NodeType type;
@@ -29,6 +30,7 @@ typedef struct Node {
     Reference* reference;                       // used only when type == NT_REFERENCE
     ArithmeticExpression* arithmeticExpression; // used only when type == NT_ARITHMETIC_EXPRESSION
     Assign* assign;                             // used only when type == NT_ASSIGN
+    Program* program;                           // used only when type == NT_PROGRAM
     struct Node *next;                          // used only when type == NT_ASSIGN, for implementing a list of assignments.
 } Node;
 
@@ -47,18 +49,17 @@ struct Reference {
     char* name;
 };
 
+struct Program {
+    Node* assign;   // This should be changed to a list of statements.
+    Node* ret;      // The return expression.
+};
+
 Node* createIntNode(int value);
 Node* createReferenceNode(char* name);
 Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right);
 Node* createAssignNode(char* name, Node* expr);
 Node* chainStatements(Node* first, Node* second);
-
-typedef struct Program {
-    Node* assign;   // This should be changed to a list of statements.
-    Node* ret;      // The return expression.
-} Program;
-
-Program* createProgram(Node* assign, Node* ret);
+Node* createProgram(Node* assign, Node* ret);
 
 /* SYMBOLS TABLE*/
 
