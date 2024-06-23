@@ -11,22 +11,45 @@ For this proof of concept, it seems enough to have a single type.
 In future versions, different enums (for instance, one for arithmetic operations) might be wise.
 */
 typedef enum NodeType {
-    NT_NUMBER, NT_REFERENCE, NT_ADD, NT_SUB, NT_MUL, NT_DIV, NT_ASSIGN
+    NT_NUMBER, NT_ARITHMETIC_EXPRESSION, NT_REFERENCE, NT_ASSIGN
 } NodeType;
+
+typedef enum ArithmeticOperator {
+    AO_ADD, AO_SUB, AO_MUL, AO_DIV
+} ArithmeticOperator;
+
+typedef struct ArithmeticExpression ArithmeticExpression;
+typedef struct Node Node;
+typedef struct Assign Assign;
+typedef struct Reference Reference;
 
 typedef struct Node {
     NodeType type;
-    int number;         // used only when type == NT_NUMBER
-    char* name;         // used only when type == NT_REFERENCE
-    struct Node *left;  // used only when type == on of the arithmetic operations
-    struct Node *right; // used only when type == on of the arithmetic operations
-    struct Node *expr;  // used only when type == NT_ASSIGN or NT_RETURN
-    struct Node *next;  // used only when type == NT_ASSIGN, in order to implement a list of assignments.
+    int number;                                 // used only when type == NT_NUMBER
+    Reference* reference;                       // used only when type == NT_REFERENCE
+    ArithmeticExpression* arithmeticExpression; // used only when type == NT_ARITHMETIC_EXPRESSION
+    Assign* assign;                             // used only when type == NT_ASSIGN
+    struct Node *next;                          // used only when type == NT_ASSIGN, for implementing a list of assignments.
 } Node;
+
+struct ArithmeticExpression {
+    ArithmeticOperator operator;
+    Node *left;
+    Node *right;
+};
+
+struct Assign {
+    char* name;
+    Node* expression;
+};
+
+struct Reference {
+    char* name;
+};
 
 Node* createIntNode(int value);
 Node* createReferenceNode(char* name);
-Node* createExprNode(NodeType type, Node* left, Node* right);
+Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right);
 Node* createAssignNode(char* name, Node* expr);
 Node* chainStatements(Node* first, Node* second);
 

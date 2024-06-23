@@ -18,23 +18,27 @@ Node* createIntNode(int number) {
 Node* createReferenceNode(char* name) {
     Node* n = malloc(sizeof(Node));
     n->type = NT_REFERENCE;
-    n->name = name;
+    n->reference = malloc(sizeof(Reference));
+    n->reference->name = name;
     return n;
 }
 
-Node* createExprNode(NodeType type, Node* left, Node* right) {
+Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right) {
     Node* n = malloc(sizeof(Node));
-    n->type = type;
-    n->left = left;
-    n->right = right;
+    n->type = NT_ARITHMETIC_EXPRESSION;
+    n->arithmeticExpression = malloc(sizeof(ArithmeticExpression));
+    n->arithmeticExpression->operator = operator;
+    n->arithmeticExpression->left = left;
+    n->arithmeticExpression->right = right;
     return n;
 }
 
 Node* createAssignNode(char* name, Node* expr){
     Node* n = malloc(sizeof(Node));
     n->type = NT_ASSIGN;
-    n->name = name;
-    n->expr = expr;
+    n->assign = malloc(sizeof(Assign));
+    n->assign->name = name;
+    n->assign->expression = expr;
     return n;
 }
 
