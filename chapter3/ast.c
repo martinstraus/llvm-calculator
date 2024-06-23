@@ -7,10 +7,12 @@ Node* createIntNode(int number) {
     return n;
 }
 
-Node* createExprNode(NodeType type, Node* left, Node* right) {
+Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right) {
     Node* n = malloc(sizeof(Node));
-    n->type = type;
-    n->left = left;
-    n->right = right;
+    n->type = NT_ARITHMETIC_EXPRESSION;
+    n->arithmeticExpression = malloc(sizeof(ArithmeticExpression));
+    n->arithmeticExpression->operator = operator;
+    n->arithmeticExpression->left = left;
+    n->arithmeticExpression->right = right;
     return n;
 }

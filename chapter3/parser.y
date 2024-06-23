@@ -33,10 +33,10 @@ calc: expr EOL { root = $1; }
     ;
 
 /* Expressions */
-expr: expr ADD expr { $$ = createExprNode(NT_ADD, $1, $3); }
-    | expr SUB expr { $$ = createExprNode(NT_SUB, $1, $3); }
-    | expr MUL expr { $$ = createExprNode(NT_MUL, $1, $3); }
-    | expr DIV expr { $$ = createExprNode(NT_DIV, $1, $3); }
+expr: expr ADD expr { $$ = createExprNode(AO_ADD, $1, $3); }
+    | expr SUB expr { $$ = createExprNode(AO_SUB, $1, $3); }
+    | expr MUL expr { $$ = createExprNode(AO_MUL, $1, $3); }
+    | expr DIV expr { $$ = createExprNode(AO_DIV, $1, $3); }
     | NUMBER { $$ = createIntNode($1); }
     ;
 
