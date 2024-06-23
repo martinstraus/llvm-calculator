@@ -6,17 +6,29 @@ For this proof of concept, it seems enough to have a single type.
 In future versions, different enums (for instance, one for arithmetic operations) might be wise.
 */
 typedef enum NodeType {
-    NT_NUMBER, NT_ADD, NT_SUB, NT_MUL, NT_DIV
+    NT_NUMBER, NT_ARITHMETIC_EXPRESSION
 } NodeType;
 
-typedef struct Node {
+typedef enum ArithmeticOperator {
+    AO_ADD, AO_SUB, AO_MUL, AO_DIV
+} ArithmeticOperator;
+
+typedef struct ArithmeticExpression ArithmeticExpression;
+typedef struct Node Node;
+
+struct Node {
     NodeType type;
     int number; // used only when type == NUMBER
-    struct Node *left; // used only when type == on of the arithmetic operations
-    struct Node *right; // used only when type == on of the arithmetic operations
-} Node;
+    ArithmeticExpression* arithmeticExpression;
+};
+
+struct ArithmeticExpression {
+    ArithmeticOperator operator;
+    Node *left;
+    Node *right;
+};
 
 Node* createIntNode(int value);
-Node* createExprNode(NodeType type, Node* left, Node* right);
+Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right);
 
 #endif

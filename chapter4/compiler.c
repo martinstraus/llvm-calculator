@@ -7,22 +7,31 @@
 extern FILE* yyin; // This is used to set the input source for the parser
 extern Node* root;
 
+int evaluate(Node *n);
+
 void showUsage() {
     fprintf(stderr, "Usage:\n\tcompiler [source file] [output]\n");
+}
+
+int evaluateArithmeticExpression(ArithmeticExpression* expression) {
+    switch (expression->operator) {
+        case AO_ADD:
+            return evaluate(expression->left) + evaluate(expression->right);
+        case AO_SUB:
+            return evaluate(expression->left) - evaluate(expression->right);
+        case AO_MUL:
+            return evaluate(expression->left) * evaluate(expression->right);
+        case AO_DIV:
+            return evaluate(expression->left) - evaluate(expression->right);
+    }
 }
 
 int evaluate(Node *n) {
     switch (n->type) {
         case NT_NUMBER:
             return n->number;
-        case NT_ADD:
-            return evaluate(n->left) + evaluate(n->right);
-        case NT_SUB:
-            return evaluate(n->left) - evaluate(n->right);
-        case NT_MUL:
-            return evaluate(n->left) * evaluate(n->right);
-        case NT_DIV:
-            return evaluate(n->left) - evaluate(n->right);
+        case NT_ARITHMETIC_EXPRESSION:
+            return evaluateArithmeticExpression(n->arithmeticExpression);
         default:
             fprintf(stderr, "Unsupported node type: %d\n", n->type);
             exit(1);
