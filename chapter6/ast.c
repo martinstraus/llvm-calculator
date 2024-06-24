@@ -18,42 +18,72 @@ Node* createIntNode(int number) {
 Node* createReferenceNode(char* name) {
     Node* n = malloc(sizeof(Node));
     n->type = NT_REFERENCE;
-    n->name = name;
+    n->reference = malloc(sizeof(Reference));
+    n->reference->name = name;
     return n;
 }
 
-Node* createExprNode(NodeType type, Node* left, Node* right) {
+Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right) {
     Node* n = malloc(sizeof(Node));
-    n->type = type;
-    n->left = left;
-    n->right = right;
+    n->type = NT_ARITHMETIC_EXPRESSION;
+    n->arithmeticExpression = malloc(sizeof(ArithmeticExpression));
+    n->arithmeticExpression->operator = operator;
+    n->arithmeticExpression->left = left;
+    n->arithmeticExpression->right = right;
     return n;
 }
 
 Node* createAssignNode(char* name, Node* expr){
     Node* n = malloc(sizeof(Node));
     n->type = NT_ASSIGN;
-    n->name = name;
-    n->expr = expr;
+    n->assign = malloc(sizeof(Assign));
+    n->assign->name = name;
+    n->assign->expression = expr;
     return n;
 }
 
-// Quite inneficient implementation, but it works.
-Node* chainStatements(Node* first, Node* new) {
-    Node* last = first;
-    while (last->next != NULL) {
-        last = last->next;
-    }
-    last->next = new;
-    return first;
+Node* createProgram(NodeList* functions, NodeList* statements, Node* ret) {
+    Node* n= malloc(sizeof(Node));
+    n->type = NT_PROGRAM;
+    n->program = malloc(sizeof(Program));
+    n->program->functions = functions;
+    n->program->statements = statements;
+    n->program->ret = ret;
+    return n;
 }
 
-Program* createProgram(FunctionNode* functions, Node* assign, Node* ret) {
-    Program* p = malloc(sizeof(Program));
-    p->functions = functions;
-    p->assign = assign;
-    p->ret = ret;
-    return p;
+Node* createFunctionDefinition(char* name, NodeList* parameters, Node* expression) {
+    Node* n = malloc(sizeof(Node));
+    n->type = NT_FUNCTION_DEFINITION;
+    n->functionDefinition = malloc(sizeof(FunctionDefinition));
+    n->functionDefinition->name = name;
+    n->functionDefinition->parameters = parameters;
+    n->functionDefinition->expr = expression;
+    return n;
+}
+
+Node* createParameterNode(char* name) {
+    Node* n = malloc(sizeof(Node));
+    n->type = NT_PARAMETER;
+    n->parameter = malloc(sizeof(Parameter));
+    n->parameter->name = name;
+    return n;
+}
+
+NodeList* createNodeList(Node* first) {
+    NodeList* list = malloc(sizeof(NodeList));
+    list->node = first;
+    list->next = NULL;
+    return list;
+}
+
+NodeList* appendNode(NodeList* list, Node* next) {
+    NodeList* last = list;
+    while(last->next != NULL) {
+        last = last->next;
+    }
+    last->next = createNodeList(next);
+    return list;
 }
 
 /* 
@@ -106,41 +136,9 @@ Symbol* createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value) {
     Symbol* s = malloc(sizeof(Symbol));
     s->name = name;
     s->value = value;
-    if (!appendSymbol(symbols, s)) { 
-        fprintf(stderr, "Symbol already defined: %s\n", name); exit(1); 
+    if (appendSymbol(symbols, s) == SYMBOL_ALREADY_DEFINED) { 
+        fprintf(stderr, "Symbol already defined: %s\n", name); 
+        exit(1); 
     }
     return s;
-}
-
-// Functions definitions
-ParameterNode* createParameterNode(char* name) {
-    ParameterNode* pd = malloc(sizeof(ParameterNode));
-    pd->name = name;
-    return pd;
-}
-
-ParameterNode* appendParameterNode(ParameterNode* first, ParameterNode* next) {
-    ParameterNode* l = first;
-    while (l->next != NULL) {
-        l = l->next;
-    }
-    l->next = next;
-    return l;
-}
-
-FunctionNode* createFunctionNode(char* name, ParameterNode* parameters, Node* expression) {
-    FunctionNode* fd = malloc(sizeof(FunctionNode));
-    fd->name = name;
-    fd->parameters = parameters;
-    fd->expr = expression;
-    return fd;
-}
-
-FunctionNode* addFunctionNode(FunctionNode* first, FunctionNode* function) {
-    FunctionNode* f = first;
-    while(f->next != NULL) {
-        f = f->next;
-    }
-    f->next = function;
-    return first;
 }

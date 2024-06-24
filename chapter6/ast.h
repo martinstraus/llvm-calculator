@@ -11,51 +11,80 @@ For this proof of concept, it seems enough to have a single type.
 In future versions, different enums (for instance, one for arithmetic operations) might be wise.
 */
 typedef enum NodeType {
-    NT_NUMBER, NT_REFERENCE, NT_ADD, NT_SUB, NT_MUL, NT_DIV, NT_ASSIGN, NT_FUNCTION_DEF
+    NT_NUMBER, NT_ARITHMETIC_EXPRESSION, NT_REFERENCE, NT_ASSIGN, NT_PROGRAM, NT_FUNCTION_DEFINITION,
+    NT_PARAMETER
 } NodeType;
 
+typedef enum ArithmeticOperator {
+    AO_ADD, AO_SUB, AO_MUL, AO_DIV
+} ArithmeticOperator;
 
-typedef struct Node {
+typedef struct ArithmeticExpression ArithmeticExpression;
+typedef struct Node Node;
+typedef struct Assign Assign;
+typedef struct Reference Reference;
+typedef struct Program Program;
+typedef struct NodeList NodeList;
+typedef struct FunctionDefinition FunctionDefinition;
+typedef struct Parameter Parameter;
+
+struct Node {
     NodeType type;
-    int number;         // used only when type == NT_NUMBER
-    char* name;         // used only when type == NT_REFERENCE
-    struct Node *left;  // used only when type == on of the arithmetic operations
-    struct Node *right; // used only when type == on of the arithmetic operations
-    struct Node *expr;  // used only when type == NT_ASSIGN or NT_RETURN
-    struct Node *next;  // used only when type == NT_ASSIGN, in order to implement a list of assignments.
-    struct FunctionNode* functionDef;
-} Node;
+    int number;                                 // used only when type == NT_NUMBER
+    Reference* reference;                       // used only when type == NT_REFERENCE
+    ArithmeticExpression* arithmeticExpression; // used only when type == NT_ARITHMETIC_EXPRESSION
+    Assign* assign;                             // used only when type == NT_ASSIGN
+    Program* program;                           // used only when type == NT_PROGRAM
+    FunctionDefinition* functionDefinition;     // used only when type == NT_FUNCTION_DEFINTION
+    Parameter* parameter;                       // used only when type == NT_PARAMETER
+};
+
+struct NodeList {
+    Node* node;
+    NodeList* next;
+};
+
+struct ArithmeticExpression {
+    ArithmeticOperator operator;
+    Node *left;
+    Node *right;
+};
+
+struct Assign {
+    char* name;
+    Node* expression;
+};
+
+struct Reference {
+    char* name;
+};
+
+struct Program {
+    NodeList* functions;
+    NodeList* statements;
+    Node* ret;
+};
+
+struct Parameter {
+    char* name;
+};
+
+struct FunctionDefinition {
+    char* name;
+    NodeList* parameters;
+    Node* expr;
+};
 
 Node* createIntNode(int value);
 Node* createReferenceNode(char* name);
-Node* createExprNode(NodeType type, Node* left, Node* right);
+Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right);
 Node* createAssignNode(char* name, Node* expr);
 Node* chainStatements(Node* first, Node* second);
-
-typedef struct ParameterNode {
-    char* name;
-    struct ParameterNode* next;
-} ParameterNode;
-
-typedef struct FunctionNode {
-    char* name;
-    ParameterNode* parameters;
-    Node* expr;
-    struct FunctionNode* next;
-} FunctionNode;
-
-typedef struct Program {
-    FunctionNode* functions; 
-    Node* assign;   // This should be changed to a list of statements.
-    Node* ret;      // The return expression.
-} Program;
-
-Program* createProgram(FunctionNode* functions, Node* assign, Node* ret);
-
-FunctionNode* createFunctionNode(char* name, ParameterNode* parameters, Node* expression);
-FunctionNode* addFunctionNode(FunctionNode* first, FunctionNode* function);
-ParameterNode* createParameterNode(char* name);
-ParameterNode* appendParameterNode(ParameterNode* list, ParameterNode* parameter);
+NodeList* createNodeList(Node* first);
+NodeList* appendNode(NodeList* list, Node* next);
+Node* createProgram(NodeList* functions, NodeList* statements, Node* ret);
+Node* createFunctionDefinition(char* name, NodeList* parameters, Node* expression);
+Node* createParameterNode(char* name);
 
 /* SYMBOLS TABLE*/
 

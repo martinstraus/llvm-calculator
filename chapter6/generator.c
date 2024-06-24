@@ -25,54 +25,70 @@ char* newVarName(){
     return name;
 }
 
+LLVMValueRef generateNumberValue(LLVMBuilderRef builder, Node* n);
+LLVMValueRef generateArithmeticExpressionValue(LLVMBuilderRef builder, Node* n);
+LLVMValueRef generateReference(LLVMBuilderRef builder, Node* n);
+LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n);
+void generateStatement(LLVMBuilderRef builder, Node* n);
+LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n);
+LLVMValueRef generateProgram(LLVMBuilderRef builder, LLVMModuleRef module, Node* program);
+
+LLVMValueRef generateNumberValue(LLVMBuilderRef builder, Node* n) {
+    return LLVMConstInt(LLVMInt32Type(), n->number, false);
+}
+
+LLVMValueRef generateArithmeticExpressionValue(LLVMBuilderRef builder, Node* n) {
+    LLVMValueRef left = generateValue(builder, n->arithmeticExpression->left);
+    LLVMValueRef right = generateValue(builder, n->arithmeticExpression->right);
+    switch (n->arithmeticExpression->operator) {
+        case AO_ADD:
+            return LLVMBuildAdd(builder, left, right, newVarName());
+        case AO_SUB:
+            return LLVMBuildSub(builder, left, right, newVarName());
+        case AO_MUL:
+            return LLVMBuildMul(builder, left, right, newVarName());
+        case AO_DIV:
+            return LLVMBuildExactUDiv(builder, left, right, newVarName());
+        default:
+            fprintf(stderr, "Unsupported operator: %d", n->type);
+            exit(1);
+            break;
+    }
+}
+
+LLVMValueRef generateReference(LLVMBuilderRef builder, Node* n) {
+    Symbol* symbol = findSymbol(symbols, n->reference->name);
+    if (symbol == NULL) {
+       fprintf(stderr, "Couldn't find symbol %s.\n", n->reference->name);
+       exit(1);
+    }
+    return LLVMBuildLoad2(builder, LLVMInt32Type(), symbol->ref, newVarName());
+}
+
 // Generate a value reference for the node. Recursively generates values for left and right, if needed.
 LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
-    if (n->type == NT_NUMBER) {
-        return LLVMConstInt(LLVMInt32Type(), n->number, false);
-    } else if (n->type == NT_REFERENCE) {
-        Symbol* symbol = findSymbol(symbols, n->name);
-        if (symbol == NULL) {
-            fprintf(stderr, "Couldn't find symbol %s.\n", n->name);
+    switch(n->type) {
+        case NT_NUMBER:
+            return generateNumberValue(builder, n);
+        case NT_ARITHMETIC_EXPRESSION:
+            return generateArithmeticExpressionValue(builder, n);
+        case NT_REFERENCE:
+            return generateReference(builder, n);
+        default:
+            fprintf(stderr, "Unsupported node type: %d", n->type);
             exit(1);
-        }
-        return LLVMBuildLoad2(builder, LLVMInt32Type(), symbol->ref, newVarName());
-        //return symbol->ref;
-    } else {
-        LLVMValueRef left = generateValue(builder, n->left);
-        LLVMValueRef right = generateValue(builder, n->right);
-        switch (n->type) {
-            case NT_ADD:
-                return LLVMBuildAdd(builder, left, right, newVarName());
-                break;
-            case NT_SUB:
-                return LLVMBuildSub(builder, left, right, newVarName());
-                break;
-            case NT_MUL:
-                return LLVMBuildMul(builder, left, right, newVarName());
-                break;
-            case NT_DIV:
-                return LLVMBuildExactUDiv(builder, left, right, newVarName());
-                break;
-            default:
-                fprintf(stderr, "Unsupported operator: %d", n->type);
-                exit(1);
-                break;
-        }
-    } 
+            break;
+    }
 }
 
 void generateStatement(LLVMBuilderRef builder, Node* n) {
     if (n->type != NT_ASSIGN) {
         fprintf(stderr, "Unsupported statement type: %d\n", n->type);
     }
-    LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->name);
-    LLVMValueRef val = generateValue(builder, n->expr);
-    LLVMBuildStore(builder, val, var);
-    Symbol* symbol = createAndAddSymbol(symbols, n->name, n);
-    if (symbol == NULL) {
-        fprintf(stderr, "Couldn't find symbol %s.\n", n->name);
-        exit(1);
-    }
+    LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->assign->name);
+    LLVMValueRef val = generateValue(builder, n->assign->expression);
+    LLVMBuildStore(builder, val, var);    
+    Symbol* symbol = createAndAddSymbol(symbols, n->assign->name, n);
     symbol->ref = var;
 }
 
@@ -82,11 +98,11 @@ LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
 }
 
 // Not fully implemented yet
-LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, FunctionNode* f) {
+LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node* f) {
     // Perhaps not the most beautiful code ever produced...
     LLVMTypeRef int32Type = LLVMInt32Type();
     int paramCount = 0;
-    ParameterNode* p = f->parameters;
+    NodeList* p = f->functionDefinition->parameters;
     while(p != NULL) {
         paramCount++;
         p=p->next;
@@ -95,41 +111,41 @@ LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Func
     for(int i = 0; i < paramCount; i++) {
         parametersTypes[i] = int32Type;
     }
-    LLVMTypeRef mainType = LLVMFunctionType(int32Type, parametersTypes, paramCount, false);
-    LLVMValueRef mainFunction = LLVMAddFunction(module, f->name, mainType);
-    LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(mainFunction, "entry");
+    LLVMTypeRef functionType = LLVMFunctionType(int32Type, parametersTypes, paramCount, false);
+    LLVMValueRef functionValue = LLVMAddFunction(module, f->functionDefinition->name, functionType);
+    LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(functionValue, "entry");
     LLVMPositionBuilderAtEnd(builder, entryBlock);
 
-    LLVMValueRef ret = generateValue(builder, f->expr);
+    LLVMValueRef ret = generateValue(builder, f->functionDefinition->expr);
     return LLVMBuildRet(builder, ret);
 }
 
-LLVMValueRef generateMainFunction(LLVMBuilderRef builder, LLVMModuleRef module, Program* program) {
+LLVMValueRef generateMainFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node* n) {
     LLVMTypeRef int32Type = LLVMInt32Type();
     LLVMTypeRef functionType = LLVMFunctionType(int32Type, NULL, 0, 0);
     LLVMValueRef function = LLVMAddFunction(module, "main", functionType);
     LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(function, "entry");
     LLVMPositionBuilderAtEnd(builder, entryBlock);
 
-    Node* a = program->assign;
-    while (a != NULL) {
-        generateStatement(builder, a);
-        a = a->next;
+    NodeList* statement = n->program->statements;
+    while (statement != NULL) {
+        generateStatement(builder, statement->node);
+        statement = statement->next;
     }
-    return generateReturn(builder, program->ret);
+    return generateReturn(builder, n->program->ret);
 }
 
-LLVMValueRef generateProgram(LLVMBuilderRef builder, LLVMModuleRef module, Program* program) {
-    FunctionNode* f = program->functions;
+LLVMValueRef generateProgram(LLVMBuilderRef builder, LLVMModuleRef module, Node* n) {
+    NodeList* f = n->program->functions;
     while(f != NULL) {
-        generateFunction(builder, module, f);
+        generateFunction(builder, module, f->node);
         f = f->next;
     }
 
-    generateMainFunction(builder, module, program);
+    generateMainFunction(builder, module, n);
 }
 
-void generate(Program* root, char* sourcefile, char* outputfile) {
+void generate(Node* root, char* sourcefile, char* outputfile) {
     // Scaffoling begins...
     LLVMInitializeCore(LLVMGetGlobalPassRegistry());
     atexit(LLVMShutdown);

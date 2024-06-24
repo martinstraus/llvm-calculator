@@ -7,7 +7,7 @@
 extern int yylex (void);
 void yyerror(const char* s);
 
-Program* root;
+Node* root;
 SymbolsTable* symbols;
 
 %}
@@ -16,11 +16,7 @@ SymbolsTable* symbols;
     int number;
     char* text;
     struct Node* node;
-    struct Program* program;
-    struct FunctionNode* function;
-    struct FunctionNode* functions;
-    struct ParameterNode* parameter;
-    struct ParameterNode* parameters;
+    struct NodeList* statements;
 }
 
 /* Define tokens */
@@ -32,12 +28,8 @@ SymbolsTable* symbols;
 %token SEMICOLON COMMA EOL
 %token FUNCTION 
 
-%type <program> calc
-%type <node> expr assign ret statements
-%type <function> function
-%type <functions> functions
-%type <parameter> parameter
-%type <parameters> parameters
+%type <node> calc expr assign ret function parameter
+%type <statements> statements functions parameters 
 
 %left ADD SUB
 %left MUL DIV
@@ -49,18 +41,18 @@ calc: functions statements ret YYEOF { root = createProgram($1, $2, $3); }
     ;
 
 functions:
-    functions function EOL  { $$ = addFunctionNode($1, $2); }
-    | function EOL          { $$ = $1; }
+    functions function EOL  { $$ = appendNode($1, $2); }
+    | function EOL          { $$ = createNodeList($1); }
     |                       { $$ = NULL; }
     ;
 
 function:
-    FUNCTION IDENTIFIER LPAREN parameters RPAREN ASSIGN expr { $$ = createFunctionNode($2, $4, $7); }
+    FUNCTION IDENTIFIER LPAREN parameters RPAREN ASSIGN expr { $$ = createFunctionDefinition($2, $4, $7); }
     ;
 
 parameters:
-    parameters COMMA parameter  { $$ = appendParameterNode($1, $3); }
-    | parameter                 { $$ = $1; }
+    parameters COMMA parameter  { $$ = appendNode($1, $3); }
+    | parameter                 { $$ = createNodeList($1); }
     |                           { $$ = NULL; }
     ;
 
@@ -69,8 +61,8 @@ parameter:
     ;
 
 statements:
-    statements assign EOL { $$ = chainStatements($1, $2); }
-    | assign EOL          { $$ = $1;   }
+    statements assign EOL { $$ = appendNode($1, $2); }
+    | assign EOL          { $$ = createNodeList($1); }
     |                     { $$ = NULL; }
     ;
 
@@ -83,10 +75,10 @@ ret:
     ;
 
 /* Expressions */
-expr: expr ADD expr { $$ = createExprNode(NT_ADD, $1, $3); }
-    | expr SUB expr { $$ = createExprNode(NT_SUB, $1, $3); }
-    | expr MUL expr { $$ = createExprNode(NT_MUL, $1, $3); }
-    | expr DIV expr { $$ = createExprNode(NT_DIV, $1, $3); }
+expr: expr ADD expr { $$ = createExprNode(AO_ADD, $1, $3); }
+    | expr SUB expr { $$ = createExprNode(AO_SUB, $1, $3); }
+    | expr MUL expr { $$ = createExprNode(AO_MUL, $1, $3); }
+    | expr DIV expr { $$ = createExprNode(AO_DIV, $1, $3); }
     | LPAREN expr RPAREN { $$ = $2; }
     | NUMBER { $$ = createIntNode($1); }
     | IDENTIFIER { $$ = createReferenceNode($1); }

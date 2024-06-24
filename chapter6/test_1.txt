@@ -1,8 +1,7 @@
-// This is a sample program
+fn f(x) <- 1+1
+fn g(x) <- 2
 
-fn f(x) <- x+1
-fn g(y) <- y*2
+a <- 8
+b <- 4
 
-a <- 1
-b <- 2
-(a+2)/(b*4)
+a
