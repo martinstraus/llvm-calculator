@@ -14,7 +14,7 @@
 #define false 0
 #define true 1
 
-extern SymbolsTable* symbols; // Defined in parser.y
+extern SymbolsTable* symbols; // Defined in compiler.c  
 
 int vars = 0;
 

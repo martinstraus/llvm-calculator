@@ -7,7 +7,7 @@
 extern FILE* yyin;            // This is used to set the input source for the parser
 extern Node* root;            // Defined in parser.y
 extern int yylineno;
-extern SymbolsTable* symbols; // Defined in parser.y
+SymbolsTable* symbols;
 
 void showUsage() {
     fprintf(stderr, "Usage:\n\tcompiler [source file] [output]\n");
