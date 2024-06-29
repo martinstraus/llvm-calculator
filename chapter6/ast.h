@@ -27,6 +27,8 @@ typedef struct Program Program;
 typedef struct NodeList NodeList;
 typedef struct FunctionDefinition FunctionDefinition;
 typedef struct Parameter Parameter;
+typedef struct SymbolsList SymbolsList;
+typedef struct SymbolsTable SymbolsTable;
 
 struct Node {
     NodeType type;
@@ -94,15 +96,16 @@ typedef struct Symbol {
     Node* value;
     LLVMValueRef ref;
 } Symbol;
- 
-/*
-This is the most naive symbols table possible: a linked list of symbols. 
-Search is horribly slow with many symbols.
-*/
-typedef struct SymbolsTable {
+
+struct SymbolsList {
     Symbol* symbol;
-    struct SymbolsTable* next;
-} SymbolsTable;
+    SymbolsList* next;
+};
+ 
+struct SymbolsTable {
+    SymbolsList* symbols;
+    SymbolsTable* parent;
+};
 
 SymbolsTable* createSymbolsTable();
 // Returns NULL if the symbol is not in the table.

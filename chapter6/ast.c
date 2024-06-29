@@ -93,42 +93,58 @@ NodeList* appendNode(NodeList* list, Node* next) {
 
 SymbolsTable* createSymbolsTable() {
     SymbolsTable* st = malloc(sizeof(SymbolsTable));
-    st->symbol = NULL;
-    st->next = NULL;
+    st->symbols = malloc(sizeof(SymbolsList));
+    st->symbols->next = NULL;
+    st->parent = NULL;
     return st; 
 }
 
 Symbol* findSymbol(SymbolsTable* table, char* name) {
     SymbolsTable* t = table;
-    while (t != NULL && strcmp(name, t->symbol->name) != 0) {
-        t = t->next;
+    SymbolsList* sl = NULL;
+    
+    while (t != NULL) {
+        SymbolsList* sl = t->symbols;
+        while (sl != NULL) {
+            if (sl->symbol != NULL && strcmp(name, sl->symbol->name) == 0) {
+                return sl->symbol;
+            }   
+            sl = sl->next;
+        }
+        t = t->parent;
     }
-    if (t != NULL) {
-        return t->symbol;
-    } else {
-        return NULL;
-    }
+    return NULL;
 }
 
-// Returns NULL if the symbol is not in the table.
+// Returns false if the symbol is not in the table.
 int containsSymbol(SymbolsTable* table, char* name) {
     return findSymbol(table, name) != NULL;
 }
 
-// Beware! it does not check if the symbol is in the table. This could be easily optimized.
 int appendSymbol(SymbolsTable* table, Symbol* symbol) {
-    SymbolsTable* t = table;
-    if (t->symbol != NULL && strcmp(t->symbol->name , symbol->name) == 0) {
-        return SYMBOL_ALREADY_DEFINED;
-    } 
-    while (t->next != NULL) {
-        t = t->next;
-        if (t->symbol != NULL && strcmp(t->symbol->name , symbol->name) == 0) {
+    SymbolsList* sl = table->symbols;
+
+    // Go to the end of the list.
+    /*while (sl != NULL && sl->symbol != NULL) {
+        if (strcmp(symbol->name, sl->symbol->name) == 0) {
             return SYMBOL_ALREADY_DEFINED;
         }
+        sl = sl->next;
+    }*/
+
+    // Go to the last symbols list.
+    while (sl->next != NULL) {
+        sl = sl->next;
     }
-    t->next = malloc(sizeof(SymbolsTable));
-    t->symbol = symbol;
+    // Here, sl should always be != NULL
+    
+    if (sl->symbol == NULL) {
+        sl->symbol = symbol;
+    } else {
+        sl->next = malloc(sizeof(SymbolsList));
+        sl->next->symbol = symbol;
+        sl->next->next = NULL;        
+    }
     return SYMBOL_ADDED;
 }
 

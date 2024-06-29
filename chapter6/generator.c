@@ -99,6 +99,8 @@ LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
 
 // Not fully implemented yet
 LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node* f) {
+
+    // Get the types of the parameters. We need them to create the function.
     // Perhaps not the most beautiful code ever produced...
     LLVMTypeRef int32Type = LLVMInt32Type();
     int paramCount = 0;
@@ -111,13 +113,29 @@ LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node
     for(int i = 0; i < paramCount; i++) {
         parametersTypes[i] = int32Type;
     }
+
+    // Create the function
     LLVMTypeRef functionType = LLVMFunctionType(int32Type, parametersTypes, paramCount, false);
     LLVMValueRef functionValue = LLVMAddFunction(module, f->functionDefinition->name, functionType);
+
+    // Create the symbols table with the parameteres.
+    p = f->functionDefinition->parameters;
+    SymbolsTable* st = createSymbolsTable();
+    st->parent = symbols;
+    symbols = st;
+    while (p != NULL) {        
+        createAndAddSymbol(symbols, p->node->parameter->name, p->node);
+        p = p->next;
+    }
+
+    // Now we can build the function's body.
     LLVMBasicBlockRef entryBlock = LLVMAppendBasicBlock(functionValue, "entry");
     LLVMPositionBuilderAtEnd(builder, entryBlock);
-
-    LLVMValueRef ret = generateValue(builder, f->functionDefinition->expr);
-    return LLVMBuildRet(builder, ret);
+    LLVMValueRef value = generateValue(builder, f->functionDefinition->expr);
+    LLVMValueRef ret = LLVMBuildRet(builder, value);
+    
+    symbols = symbols->parent;
+    return ret;
 }
 
 LLVMValueRef generateMainFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node* n) {
