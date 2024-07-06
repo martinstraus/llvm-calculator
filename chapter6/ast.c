@@ -148,8 +148,9 @@ int appendSymbol(SymbolsTable* table, Symbol* symbol) {
     return SYMBOL_ADDED;
 }
 
-Symbol* createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value) {
+Symbol* createAndAddSymbol(SymbolsTable* symbols, SymbolType type, char* name, Node* value) {
     Symbol* s = malloc(sizeof(Symbol));
+    s->type = type;
     s->name = name;
     s->value = value;
     if (appendSymbol(symbols, s) == SYMBOL_ALREADY_DEFINED) { 

@@ -62,7 +62,11 @@ LLVMValueRef generateReference(LLVMBuilderRef builder, Node* n) {
        fprintf(stderr, "Couldn't find symbol %s.\n", n->reference->name);
        exit(1);
     }
-    return LLVMBuildLoad2(builder, LLVMInt32Type(), symbol->ref, newVarName());
+    if (symbol->type == ST_PARAMETER) {
+        return symbol->ref;
+    } else {
+        return LLVMBuildLoad2(builder, LLVMInt32Type(), symbol->ref, newVarName());
+    }
 }
 
 // Generate a value reference for the node. Recursively generates values for left and right, if needed.
@@ -88,7 +92,7 @@ void generateStatement(LLVMBuilderRef builder, Node* n) {
     LLVMValueRef var = LLVMBuildAlloca(builder, LLVMInt32Type(), n->assign->name);
     LLVMValueRef val = generateValue(builder, n->assign->expression);
     LLVMBuildStore(builder, val, var);    
-    Symbol* symbol = createAndAddSymbol(symbols, n->assign->name, n);
+    Symbol* symbol = createAndAddSymbol(symbols, ST_CONSTANT, n->assign->name, n);
     symbol->ref = var;
 }
 
@@ -103,8 +107,8 @@ LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node
     // Get the types of the parameters. We need them to create the function.
     // Perhaps not the most beautiful code ever produced...
     LLVMTypeRef int32Type = LLVMInt32Type();
-    int paramCount = 0;
     NodeList* p = f->functionDefinition->parameters;
+    int paramCount = 0;
     while(p != NULL) {
         paramCount++;
         p=p->next;
@@ -123,8 +127,10 @@ LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node
     SymbolsTable* st = createSymbolsTable();
     st->parent = symbols;
     symbols = st;
+    int paramIndex = 0;
     while (p != NULL) {        
-        createAndAddSymbol(symbols, p->node->parameter->name, p->node);
+        Symbol* symbol = createAndAddSymbol(symbols, ST_PARAMETER, p->node->parameter->name, p->node);
+        symbol->ref = LLVMGetParam(functionValue, paramIndex);
         p = p->next;
     }
 

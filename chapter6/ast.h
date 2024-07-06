@@ -91,7 +91,10 @@ Node* createParameterNode(char* name);
 /* SYMBOLS TABLE*/
 
 // Each symbol is something defined in assignment statements.
+typedef enum SymbolType { ST_PARAMETER, ST_CONSTANT, ST_FUNCTION } SymbolType;
+
 typedef struct Symbol {
+    SymbolType type;
     char* name;
     Node* value;
     LLVMValueRef ref;
@@ -114,6 +117,6 @@ Symbol* findSymbol(SymbolsTable* table, char* name);
 int containsSymbol(SymbolsTable* table, char* name);
 // Appends a symbol to the table.
 int appendSymbol(SymbolsTable* table, Symbol* symbol);
-Symbol* createAndAddSymbol(SymbolsTable* symbols, char* name, Node* value);
+Symbol* createAndAddSymbol(SymbolsTable* symbols, SymbolType type, char* name, Node* value);
 
 #endif
