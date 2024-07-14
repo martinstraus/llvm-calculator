@@ -187,7 +187,22 @@ LLVMValueRef generateFunctionCall(LLVMBuilderRef builder, Node* n) {
         fprintf(stderr, "Function '%s' not found.\n", n->functionCall->name);
         exit(1);
     }
-        return LLVMBuildCall2(builder, s->functionType, s->ref, NULL, 0, n->functionCall->name);
+
+    // Build the array with parameters;
+    int paramCount = 0;
+    NodeList* paramList = n->functionCall->parameters;
+    while (paramList != NULL) {
+        paramCount++;
+        paramList = paramList->next;
+    }
+    LLVMValueRef* parameters = malloc(sizeof(LLVMValueRef) * paramCount);
+    paramList = n->functionCall->parameters;
+    for (int i = 0;i < paramCount; i++) {
+        parameters[i] = generateValue(builder, paramList->node);
+        paramList = paramList->next;
+    }
+
+    return LLVMBuildCall2(builder, s->functionType, s->ref, parameters, paramCount, n->functionCall->name);
 }
 
 void generate(Node* root, char* sourcefile, char* outputfile) {

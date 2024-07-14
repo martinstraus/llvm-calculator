@@ -1,9 +1,9 @@
 // This is a sample program
 
-fn f() <- 3    
+fn f(x) <- x+1
 fn g(y) <- y*2
 
 a <- 1
 b <- 2
 
-f()
+f(a)+g(b)
