@@ -3,6 +3,8 @@
 #include <llvm-c/Core.h>
 
 #define GROG_AST
+#define SYMBOL_ADDED 1
+#define SYMBOL_ALREADY_DEFINED 0
 
 /* AST */
 
@@ -12,7 +14,7 @@ In future versions, different enums (for instance, one for arithmetic operations
 */
 typedef enum NodeType {
     NT_NUMBER, NT_ARITHMETIC_EXPRESSION, NT_REFERENCE, NT_ASSIGN, NT_PROGRAM, NT_FUNCTION_DEFINITION,
-    NT_PARAMETER
+    NT_PARAMETER, NT_FUNCTION_CALL
 } NodeType;
 
 typedef enum ArithmeticOperator {
@@ -27,6 +29,7 @@ typedef struct Program Program;
 typedef struct NodeList NodeList;
 typedef struct FunctionDefinition FunctionDefinition;
 typedef struct Parameter Parameter;
+typedef struct FunctionCall FunctionCall;
 typedef struct SymbolsList SymbolsList;
 typedef struct SymbolsTable SymbolsTable;
 
@@ -39,6 +42,7 @@ struct Node {
     Program* program;                           // used only when type == NT_PROGRAM
     FunctionDefinition* functionDefinition;     // used only when type == NT_FUNCTION_DEFINTION
     Parameter* parameter;                       // used only when type == NT_PARAMETER
+    FunctionCall* functionCall;                 // used only then tpye == NT_FUNCTION_CALL
 };
 
 struct NodeList {
@@ -77,6 +81,11 @@ struct FunctionDefinition {
     Node* expr;
 };
 
+struct FunctionCall {
+    char* name;
+    NodeList* parameters;
+};
+
 Node* createIntNode(int value);
 Node* createReferenceNode(char* name);
 Node* createExprNode(ArithmeticOperator operator, Node* left, Node* right);
@@ -87,6 +96,7 @@ NodeList* appendNode(NodeList* list, Node* next);
 Node* createProgram(NodeList* functions, NodeList* statements, Node* ret);
 Node* createFunctionDefinition(char* name, NodeList* parameters, Node* expression);
 Node* createParameterNode(char* name);
+Node* createFunctionCallNode(char* name, NodeList* parameters);
 
 /* SYMBOLS TABLE*/
 
@@ -98,6 +108,7 @@ typedef struct Symbol {
     char* name;
     Node* value;
     LLVMValueRef ref;
+    LLVMTypeRef functionType;
 } Symbol;
 
 struct SymbolsList {

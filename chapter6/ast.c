@@ -3,9 +3,6 @@
 #include <string.h>
 #include "ast.h"
 
-#define SYMBOL_ADDED 1
-#define SYMBOL_ALREADY_DEFINED 0
-
 /* ABSTRACT SYNTAX TREE */
 
 Node* createIntNode(int number) {
@@ -70,6 +67,15 @@ Node* createParameterNode(char* name) {
     return n;
 }
 
+Node* createFunctionCallNode(char* name, NodeList* parameters) {
+    Node* n = malloc(sizeof(Node));
+    n->type = NT_FUNCTION_CALL;
+    n->functionCall = malloc(sizeof(FunctionCall));
+    n->functionCall->name = name;
+    n->functionCall->parameters = parameters;
+    return n;
+}
+
 NodeList* createNodeList(Node* first) {
     NodeList* list = malloc(sizeof(NodeList));
     list->node = first;
@@ -123,14 +129,6 @@ int containsSymbol(SymbolsTable* table, char* name) {
 
 int appendSymbol(SymbolsTable* table, Symbol* symbol) {
     SymbolsList* sl = table->symbols;
-
-    // Go to the end of the list.
-    /*while (sl != NULL && sl->symbol != NULL) {
-        if (strcmp(symbol->name, sl->symbol->name) == 0) {
-            return SYMBOL_ALREADY_DEFINED;
-        }
-        sl = sl->next;
-    }*/
 
     // Go to the last symbols list.
     while (sl->next != NULL) {

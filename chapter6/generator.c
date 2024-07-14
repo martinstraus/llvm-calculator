@@ -29,6 +29,7 @@ LLVMValueRef generateNumberValue(LLVMBuilderRef builder, Node* n);
 LLVMValueRef generateArithmeticExpressionValue(LLVMBuilderRef builder, Node* n);
 LLVMValueRef generateReference(LLVMBuilderRef builder, Node* n);
 LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n);
+LLVMValueRef generateFunctionCall(LLVMBuilderRef builder, Node* n);
 void generateStatement(LLVMBuilderRef builder, Node* n);
 LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n);
 LLVMValueRef generateProgram(LLVMBuilderRef builder, LLVMModuleRef module, Node* program);
@@ -78,6 +79,8 @@ LLVMValueRef generateValue(LLVMBuilderRef builder, Node* n) {
             return generateArithmeticExpressionValue(builder, n);
         case NT_REFERENCE:
             return generateReference(builder, n);
+        case NT_FUNCTION_CALL:
+            return generateFunctionCall(builder, n);
         default:
             fprintf(stderr, "Unsupported node type: %d", n->type);
             exit(1);
@@ -97,8 +100,7 @@ void generateStatement(LLVMBuilderRef builder, Node* n) {
 }
 
 LLVMValueRef generateReturn(LLVMBuilderRef builder, Node* n) {
-    LLVMValueRef ret = generateValue(builder, n);
-    return LLVMBuildRet(builder, ret);
+    return LLVMBuildRet(builder, generateValue(builder, n));
 }
 
 // Not fully implemented yet
@@ -141,6 +143,16 @@ LLVMValueRef generateFunction(LLVMBuilderRef builder, LLVMModuleRef module, Node
     LLVMValueRef ret = LLVMBuildRet(builder, value);
     
     symbols = symbols->parent;
+    Symbol* s = malloc(sizeof(Symbol));
+    s->type = ST_FUNCTION;
+    s->name = f->functionDefinition->name;
+    s->value = f;
+    s->ref = functionValue;
+    s->functionType = functionType;
+    if (appendSymbol(symbols, s) == SYMBOL_ALREADY_DEFINED) {
+        fprintf(stderr, "Symbol '%s' already defined.", f->functionDefinition->name);
+        exit(1);
+    }
     return ret;
 }
 
@@ -167,6 +179,15 @@ LLVMValueRef generateProgram(LLVMBuilderRef builder, LLVMModuleRef module, Node*
     }
 
     generateMainFunction(builder, module, n);
+}
+
+LLVMValueRef generateFunctionCall(LLVMBuilderRef builder, Node* n) {
+    Symbol* s = findSymbol(symbols, n->functionCall->name);
+    if (s == NULL) {
+        fprintf(stderr, "Function '%s' not found.\n", n->functionCall->name);
+        exit(1);
+    }
+        return LLVMBuildCall2(builder, s->functionType, s->ref, NULL, 0, n->functionCall->name);
 }
 
 void generate(Node* root, char* sourcefile, char* outputfile) {

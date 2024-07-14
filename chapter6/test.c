@@ -4,25 +4,33 @@
 #include "ast.h"
 #include "generator.h"
 
-extern FILE* yyin;            // This is used to set the input source for the parser
-extern Node* root;            // Defined in parser.y
 extern int yylineno;
 SymbolsTable* symbols;
 
-void showUsage() {
-    fprintf(stderr, "Usage:\n\tcompiler [source file] [output]\n");
+Node* createNode(NodeType type) {
+    Node* n = malloc(sizeof(Node));
+    n->type = type;
+    return n;
 }
 
 int main(int args, char** argv) {
-    if (args < 3) {
-        showUsage();
-        exit(1);
-    }
-    yyin = fopen(argv[1], "r");
     symbols = createSymbolsTable();
-    yyparse();
-    generate(root, argv[1], argv[2]);
-    fclose(yyin);
+
+    Node* program = createProgram(
+        createNodeList(
+            createFunctionDefinition(
+                "f", 
+                createNodeList(
+                    createParameterNode("x")
+                ),
+                createExprNode(AO_ADD, createReferenceNode("x"), createIntNode(1))
+            )
+        ),
+        NULL,
+        createExprNode(AO_ADD, createIntNode(1), createIntNode(4))
+    );
+       
+    generate(program, "test", "t");
     return 0;
 }
 
